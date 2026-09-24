@@ -1,0 +1,14 @@
+flowchart TD
+    A["add.S<br/>(rv64ui integer-add test)"] --> B["riscv64-unknown-elf-gcc<br/>compile + link"]
+    B --> C["add.elf"]
+    C --> D["elf2hex 8 4194304 add.elf 2147483648<br/>&gt; code.mem"]
+    D --> E["make generate_boot_files<br/>(XXD_VERSION=2023)"]
+    E --> F["boot.LSB / boot.MSB"]
+    F --> G["$readmem loads code.mem<br/>into Verilator sim"]
+    G --> H["./out +trace +rtldump<br/>(bin/out, Shakti C-Class core)"]
+    H --> I["rtl.dump<br/>(per-instruction commit trace)"]
+    H --> J["logs/vlt_dump.vcd<br/>(waveform, needs --trace at compile time)"]
+    I --> K{"tohost write<br/>at 0x80001000?"}
+    K -->|"value = 1"| L["PASS"]
+    K -->|"value = odd, != 1"| M["FAIL (sub-test #)"]
+    J --> N["gtkwave logs/vlt_dump.vcd<br/>(optional waveform inspection)"]

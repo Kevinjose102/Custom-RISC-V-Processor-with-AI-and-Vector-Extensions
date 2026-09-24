@@ -1,0 +1,44 @@
+###### **χRVFormal — talking points**
+
+
+
+* **What it is**
+
+Formal verification of RISC-V processors — mathematically proving the design matches the spec, rather than testing it with examples.
+
+
+
+* **The problem it attacks**
+
+To prove a processor correct you need the RISC-V spec in machine-readable form. The existing standard tool, riscv-formal, has a reference model that's 105,000 lines of Verilog — too big to maintain or extend, and despite that size it doesn't support privileged instructions, CSRs, or virtual memory at all.
+
+
+
+* **What they did**
+
+Wrote the reference model in Chisel, a high-level hardware language, instead. 4,600 lines — about 4% the size — and it covers more: three privilege levels, CSRs, Sv39 virtual memory. Plus a synchronisation mechanism so a single-cycle reference model can be compared against a pipelined or out-of-order processor.
+
+
+
+* **The result**
+
+Found 7 real, previously-unknown bugs in two open-source cores, confirmed by the original designers. riscv-formal found only 2 of them. Works on BOOM, a full out-of-order superscalar core.
+
+
+
+* **Why it's in my set**
+
+It's the formal-methods counterpart to my base paper. PATARA checks self-consistency — that SUB undoes what ADD did. This checks conformance to the actual RISC-V specification, which is the gap PATARA openly admits it doesn't cover.
+
+
+
+* **If asked about limitations**
+
+It uses bounded model checking to depth 40, so it proves no bug within 40 cycles rather than a complete proof — they tried unbounded methods and the problem was too large. And the synchronisation mechanism itself isn't formally verified.
+
+
+
+* **If asked why Chisel matters when our core isn't Chisel**
+
+Chisel and Bluespec are both high-level languages that generate Verilog — same relationship. The paper also supports a Verilog flow directly. And the argument "verify at the high-level source, not the generated Verilog" applies to our Bluespec work too.
+

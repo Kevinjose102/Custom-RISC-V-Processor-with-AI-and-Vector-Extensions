@@ -1,0 +1,284 @@
+{
+  "c-class/.git_hooks/parse.py": {
+    "mtime": 1786521284.3918505,
+    "seen": 1789744035.8562667,
+    "ast_hash": "1a5216466ce8b237f081cb83d9dd02ac",
+    "semantic_hash": "1a5216466ce8b237f081cb83d9dd02ac"
+  },
+  "c-class/.git_hooks/post-checkout": {
+    "mtime": 1786469786.9237146,
+    "seen": 1789744035.856271,
+    "ast_hash": "be38bd1107a938409a49fa2645f4fc9e",
+    "semantic_hash": "be38bd1107a938409a49fa2645f4fc9e"
+  },
+  "c-class/.git_hooks/post-commit": {
+    "mtime": 1786469786.9247193,
+    "seen": 1789744035.8562727,
+    "ast_hash": "d1e9121e3b2ac5b40d59441e50055ed2",
+    "semantic_hash": "d1e9121e3b2ac5b40d59441e50055ed2"
+  },
+  "c-class/.git_hooks/post-merge": {
+    "mtime": 1786469786.9247193,
+    "seen": 1789744035.8562737,
+    "ast_hash": "b9483fe1fd121bf1ee31152a29bef4db",
+    "semantic_hash": "b9483fe1fd121bf1ee31152a29bef4db"
+  },
+  "c-class/.git_hooks/setup.sh": {
+    "mtime": 1786521284.413851,
+    "seen": 1789744035.8562744,
+    "ast_hash": "ec21bf07402321fddd1168102e6a8eb4",
+    "semantic_hash": "ec21bf07402321fddd1168102e6a8eb4"
+  },
+  "c-class/build_scripts/c32_imafcsu_sim.sh": {
+    "mtime": 1786521284.5308063,
+    "seen": 1789744035.856275,
+    "ast_hash": "44e99f666f3258c21a6aeba0862d9597",
+    "semantic_hash": "44e99f666f3258c21a6aeba0862d9597"
+  },
+  "c-class/build_scripts/c64_sim.sh": {
+    "mtime": 1786521284.549896,
+    "seen": 1789744035.856276,
+    "ast_hash": "b3d8cac572bc83bc3ed8753937adc410",
+    "semantic_hash": "b3d8cac572bc83bc3ed8753937adc410"
+  },
+  "c-class/build_scripts/c64_tsoc_sim.sh": {
+    "mtime": 1786521284.5708983,
+    "seen": 1789744035.8562765,
+    "ast_hash": "7ebf86fd6b5793f128ec568c49f75ecd",
+    "semantic_hash": "7ebf86fd6b5793f128ec568c49f75ecd"
+  },
+  "c-class/build_scripts/nexys_video.sh": {
+    "mtime": 1786521284.594895,
+    "seen": 1789744035.8562772,
+    "ast_hash": "17c19645fbbb4380884507280a478a05",
+    "semantic_hash": "17c19645fbbb4380884507280a478a05"
+  },
+  "c-class/build_scripts/vcu_108.sh": {
+    "mtime": 1786521284.616898,
+    "seen": 1789744035.856278,
+    "ast_hash": "462b95faafcf636ac0c5f9436af42d35",
+    "semantic_hash": "462b95faafcf636ac0c5f9436af42d35"
+  },
+  "c-class/docs/autoclassdiag.py": {
+    "mtime": 1786521285.7059107,
+    "seen": 1789744035.8562784,
+    "ast_hash": "37b617937bb8096a4dfc2b8c05c06666",
+    "semantic_hash": "37b617937bb8096a4dfc2b8c05c06666"
+  },
+  "c-class/docs/mermaid.py": {
+    "mtime": 1786521285.7454271,
+    "seen": 1789744035.8562794,
+    "ast_hash": "d3dd18b7bd336bd010d0cc5f13ea9101",
+    "semantic_hash": "d3dd18b7bd336bd010d0cc5f13ea9101"
+  },
+  "c-class/docs/source/conf.py": {
+    "mtime": 1786521285.7684264,
+    "seen": 1789744035.85628,
+    "ast_hash": "bdf41ba66cce552f7b4e0efdfb0d1213",
+    "semantic_hash": "bdf41ba66cce552f7b4e0efdfb0d1213"
+  },
+  "c-class/docs/version_extract.py": {
+    "mtime": 1786521285.788427,
+    "seen": 1789744035.8562806,
+    "ast_hash": "f8074fdc423d52fc8b81cef4e7a0e258",
+    "semantic_hash": "f8074fdc423d52fc8b81cef4e7a0e258"
+  },
+  "c-class/docs/yaml_doc.py": {
+    "mtime": 1786521285.8074293,
+    "seen": 1789744035.8562815,
+    "ast_hash": "7850463759cadf7aa48e27362c55b2fb",
+    "semantic_hash": "7850463759cadf7aa48e27362c55b2fb"
+  },
+  "c-class/sim_main.h": {
+    "mtime": 1786522452.0350995,
+    "seen": 1789744035.856282,
+    "ast_hash": "085bf1bdee210597446c84c9a3cdf819",
+    "semantic_hash": "085bf1bdee210597446c84c9a3cdf819"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/compareRecFN.v": {
+    "mtime": 1786521579.1305354,
+    "seen": 1789744035.8562827,
+    "ast_hash": "354b64a6901d2f24aa3eb3d719a2af2b",
+    "semantic_hash": "354b64a6901d2f24aa3eb3d719a2af2b"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/compressBy2.v": {
+    "mtime": 1786521579.149536,
+    "seen": 1789744035.8562834,
+    "ast_hash": "5841a562e218c110c8ed04f3b04caa84",
+    "semantic_hash": "5841a562e218c110c8ed04f3b04caa84"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/compressBy4.v": {
+    "mtime": 1786521579.168538,
+    "seen": 1789744035.856284,
+    "ast_hash": "e86a74ac703c5087f7533bd5a085883d",
+    "semantic_hash": "e86a74ac703c5087f7533bd5a085883d"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/countLeadingZeros.v": {
+    "mtime": 1786521579.1906805,
+    "seen": 1789744035.8562846,
+    "ast_hash": "5608a846f1614cb9d3541106fd9edecf",
+    "semantic_hash": "5608a846f1614cb9d3541106fd9edecf"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/divSqrtRecFN_small.v": {
+    "mtime": 1786521579.2106814,
+    "seen": 1789744035.8562853,
+    "ast_hash": "c1cd2a43c9236af8c269769faea8dad9",
+    "semantic_hash": "c1cd2a43c9236af8c269769faea8dad9"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/div_sqrt.v": {
+    "mtime": 1786521579.23068,
+    "seen": 1789744035.8562863,
+    "ast_hash": "9dfccdc5290db8f42507d73c9794cf9d",
+    "semantic_hash": "9dfccdc5290db8f42507d73c9794cf9d"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/fNToRecFN.v": {
+    "mtime": 1786521579.248679,
+    "seen": 1789744035.8562872,
+    "ast_hash": "038ace33eb8d76cc04349a0200464b22",
+    "semantic_hash": "038ace33eb8d76cc04349a0200464b22"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/ftof.v": {
+    "mtime": 1786521579.2676804,
+    "seen": 1789744035.856288,
+    "ast_hash": "bb28f5ff8c4e55f9d24798acb53d590c",
+    "semantic_hash": "bb28f5ff8c4e55f9d24798acb53d590c"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/ftoi.v": {
+    "mtime": 1786521579.2866848,
+    "seen": 1789744035.8562887,
+    "ast_hash": "7b913bab522291621ca272cd88cc1d5f",
+    "semantic_hash": "7b913bab522291621ca272cd88cc1d5f"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/iNFromException.v": {
+    "mtime": 1786521579.3048115,
+    "seen": 1789744035.8562896,
+    "ast_hash": "66ee37c6ca8391692990a43c175cde54",
+    "semantic_hash": "66ee37c6ca8391692990a43c175cde54"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/iNToRecFN.v": {
+    "mtime": 1786521579.3228135,
+    "seen": 1789744035.8562903,
+    "ast_hash": "4a70351d9c45610092528df173d9cbee",
+    "semantic_hash": "4a70351d9c45610092528df173d9cbee"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/isSigNaNRecFN.v": {
+    "mtime": 1786521579.3418117,
+    "seen": 1789744035.856291,
+    "ast_hash": "0c91791c92c67a7f15488be2e56909d7",
+    "semantic_hash": "0c91791c92c67a7f15488be2e56909d7"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/itof.v": {
+    "mtime": 1786521579.360811,
+    "seen": 1789744035.8562915,
+    "ast_hash": "9bea0b7706b78cc8f1d7472b8922fb4e",
+    "semantic_hash": "9bea0b7706b78cc8f1d7472b8922fb4e"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/lowMaskHiLo.v": {
+    "mtime": 1786521579.378818,
+    "seen": 1789744035.8562922,
+    "ast_hash": "753c26c29e5371eb6ac05994dd07556c",
+    "semantic_hash": "753c26c29e5371eb6ac05994dd07556c"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/lowMaskLoHi.v": {
+    "mtime": 1786521579.3953233,
+    "seen": 1789744035.8562932,
+    "ast_hash": "a7e3b8b8702d4262035d7a0a5d654570",
+    "semantic_hash": "a7e3b8b8702d4262035d7a0a5d654570"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/mulAdd.v": {
+    "mtime": 1786521579.4133246,
+    "seen": 1789744035.856294,
+    "ast_hash": "2464b8a751b2d7d47657cc43e0bb638f",
+    "semantic_hash": "2464b8a751b2d7d47657cc43e0bb638f"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/mulAddRecFN.v": {
+    "mtime": 1786521579.435325,
+    "seen": 1789744035.8562944,
+    "ast_hash": "3e873bf5a41a97745bb99e7f443c9fc7",
+    "semantic_hash": "3e873bf5a41a97745bb99e7f443c9fc7"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/mulRecFN.v": {
+    "mtime": 1786521579.4533234,
+    "seen": 1789744035.856295,
+    "ast_hash": "7c0bf57140dd857c39b0c11d5932f8bf",
+    "semantic_hash": "7c0bf57140dd857c39b0c11d5932f8bf"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/recFNToFN.v": {
+    "mtime": 1786521579.4733295,
+    "seen": 1789744035.8562956,
+    "ast_hash": "d7f34fc6db3cf666c706ffd52b73d887",
+    "semantic_hash": "d7f34fc6db3cf666c706ffd52b73d887"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/recFNToIN.v": {
+    "mtime": 1786521579.4928372,
+    "seen": 1789744035.8562965,
+    "ast_hash": "18fa81b8e96987fb0802d4458c02fe7a",
+    "semantic_hash": "18fa81b8e96987fb0802d4458c02fe7a"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/recFNToRawFN.v": {
+    "mtime": 1786521579.5138366,
+    "seen": 1789744035.8562973,
+    "ast_hash": "788070dd34240f0a2b71f4a3b2803225",
+    "semantic_hash": "788070dd34240f0a2b71f4a3b2803225"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/recFNToRecFN.v": {
+    "mtime": 1786521579.533837,
+    "seen": 1789744035.8562977,
+    "ast_hash": "e411c2b0c66b08d8c9eb2d47564cfda2",
+    "semantic_hash": "e411c2b0c66b08d8c9eb2d47564cfda2"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/reverse.v": {
+    "mtime": 1786521579.5538414,
+    "seen": 1789744035.8562984,
+    "ast_hash": "fbc8405f5ac8d63be7631a0ba7a34028",
+    "semantic_hash": "fbc8405f5ac8d63be7631a0ba7a34028"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/roundAnyRawFNToRecFN.v": {
+    "mtime": 1786521579.5753927,
+    "seen": 1789744035.8562992,
+    "ast_hash": "e07f698a03570e0101766cbec2e448f8",
+    "semantic_hash": "e07f698a03570e0101766cbec2e448f8"
+  },
+  "c-class/src/fpu/hardfloat/verilog_src/roundRawFNToRecFN.v": {
+    "mtime": 1786521579.594901,
+    "seen": 1789744035.8562999,
+    "ast_hash": "c5c796dc6fd01b52f7db2a07249ddb2b",
+    "semantic_hash": "c5c796dc6fd01b52f7db2a07249ddb2b"
+  },
+  "c-class/test_soc/c64_c32/sim_main.cpp": {
+    "mtime": 1786469787.4070404,
+    "seen": 1789744035.8563006,
+    "ast_hash": "35d711724dcebafc9c0eab179fc86635",
+    "semantic_hash": "35d711724dcebafc9c0eab179fc86635"
+  },
+  "c-class/test_soc/nexys_video/fpga_top.v": {
+    "mtime": 1786521581.3785572,
+    "seen": 1789744035.8563013,
+    "ast_hash": "10737339d30f7c0c50dc05c3d01b0559",
+    "semantic_hash": "10737339d30f7c0c50dc05c3d01b0559"
+  },
+  "c-class/test_soc/nexys_video/yq_nexys_video.sh": {
+    "mtime": 1786521286.532981,
+    "seen": 1789744035.8563025,
+    "ast_hash": "ddb66c6c200e767f1e6a02182291a595",
+    "semantic_hash": "ddb66c6c200e767f1e6a02182291a595"
+  },
+  "c-class/test_soc/profpga/fpga_top.v": {
+    "mtime": 1786521581.6562507,
+    "seen": 1789744035.8563032,
+    "ast_hash": "0f927022212cc7a5eb49ddc6bcf44b21",
+    "semantic_hash": "0f927022212cc7a5eb49ddc6bcf44b21"
+  },
+  "c-class/test_soc/vcu108/fpga_top.v": {
+    "mtime": 1786521581.8995166,
+    "seen": 1789744035.856304,
+    "ast_hash": "bb10e9e3f36975d177136164b36def1e",
+    "semantic_hash": "bb10e9e3f36975d177136164b36def1e"
+  },
+  "c-class/test_soc/vcu118/fpga_top.v": {
+    "mtime": 1786521582.1410944,
+    "seen": 1789744035.8563046,
+    "ast_hash": "3eb42ab5abf5e0f2185ff45943307207",
+    "semantic_hash": "3eb42ab5abf5e0f2185ff45943307207"
+  }
+}

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Shakti C-Class Architecture (verified build)</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  .wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 20px;
+    color: #1a1a1a;
+    margin: 0 0 4px 0;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #6b6b6b;
+    margin: 0 0 16px 0;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  text {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Shakti C-Class &mdash; Verified Architecture (this project's build)</h1>
+  <p class="subtitle">RV64IMAFDCSU_Zicsr_Zifencei &middot; parameters pulled from core64.yaml / rv64i_isa.yaml / makefile.inc, not generic docs</p>
+
+<svg viewBox="0 0 1240 980" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Shakti C-Class SoC and pipeline block diagram</title>
+  <desc id="desc">Block diagram of the Shakti C-Class 6-stage in-order RISC-V pipeline as configured in this project: gshare branch predictor with 32-entry BTB, 512-entry BHT and 8-entry RAS; 16KB 4-way I-Cache and D-Cache each with a 4-entry TLB; an active Sv39 MMU with M/S/U privilege modes; a software bsv_float FPU; an Mbox with 1-cycle multiply and 32-cycle divide; 4 PMP regions; connected via a 64-bit AXI4 fabric to UART, CLINT, BootROM, BRAM, and a JTAG debug module; no L2 cache; 32-bit physical address space.</desc>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#6b6b6b"/>
+    </marker>
+  </defs>
+
+  <!-- ===================== connectors first ===================== -->
+  <g stroke="#8a8a8a" stroke-width="1.5" fill="none">
+    <!-- pipeline stage arrows -->
+    <line x1="216" y1="178" x2="230" y2="178" marker-end="url(#arrow)"/>
+    <line x1="396" y1="178" x2="410" y2="178" marker-end="url(#arrow)"/>
+    <line x1="576" y1="178" x2="590" y2="178" marker-end="url(#arrow)"/>
+    <line x1="756" y1="178" x2="770" y2="178" marker-end="url(#arrow)"/>
+    <line x1="936" y1="178" x2="950" y2="178" marker-end="url(#arrow)"/>
+
+    <!-- execute stage down to memory/execute-units -->
+    <line x1="137" y1="226" x2="175" y2="308" marker-end="url(#arrow)"/>
+    <line x1="857" y1="226" x2="445" y2="308" marker-end="url(#arrow)"/>
+    <line x1="677" y1="226" x2="718" y2="308" marker-end="url(#arrow)"/>
+    <line x1="677" y1="226" x2="898" y2="308" marker-end="url(#arrow)"/>
+    <line x1="677" y1="226" x2="1068" y2="308" marker-end="url(#arrow)"/>
+
+    <!-- memory subsystem / MMU row -->
+    <line x1="175" y1="404" x2="175" y2="438" marker-end="url(#arrow)"/>
+    <line x1="445" y1="404" x2="445" y2="438" marker-end="url(#arrow)"/>
+
+    <!-- MMU/debug row to fabric -->
+    <line x1="195" y1="518" x2="195" y2="548" marker-end="url(#arrow)"/>
+    <line x1="725" y1="518" x2="725" y2="548" marker-end="url(#arrow)"/>
+
+    <!-- fabric to peripherals -->
+    <line x1="160" y1="598" x2="160" y2="638" marker-end="url(#arrow)"/>
+    <line x1="400" y1="598" x2="400" y2="638" marker-end="url(#arrow)"/>
+    <line x1="640" y1="598" x2="640" y2="638" marker-end="url(#arrow)"/>
+    <line x1="880" y1="598" x2="880" y2="638" marker-end="url(#arrow)"/>
+    <line x1="1090" y1="598" x2="1090" y2="638" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- ===================== pipeline group ===================== -->
+  <rect x="40" y="88" width="1160" height="160" rx="8" fill="none" stroke="#c9c9c9" stroke-dasharray="4 4"/>
+  <text x="60" y="110" font-size="12" font-weight="600" fill="#2e6b8f">CPU PIPELINE &mdash; 6 STAGES, IN-ORDER, SINGLE-ISSUE</text>
+
+  <!-- Stage 0 Fetch -->
+  <g>
+    <rect x="56" y="126" width="160" height="100" rx="6" fill="#eaf2f8" stroke="#2e6b8f"/>
+    <text x="136" y="150" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Stage 0 &middot; Fetch</text>
+    <text x="136" y="168" text-anchor="middle" font-size="10" fill="#4d4d4d">gshare predictor</text>
+    <text x="136" y="182" text-anchor="middle" font-size="10" fill="#4d4d4d">BTB=32, BHT=512</text>
+    <text x="136" y="196" text-anchor="middle" font-size="10" fill="#4d4d4d">RAS depth=8</text>
+    <text x="136" y="212" text-anchor="middle" font-size="10" fill="#4d4d4d">reset PC=0x1000</text>
+  </g>
+
+  <!-- Stage 1 Decode -->
+  <g>
+    <rect x="236" y="126" width="160" height="100" rx="6" fill="#eaf2f8" stroke="#2e6b8f"/>
+    <text x="316" y="150" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Stage 1 &middot; Decode</text>
+    <text x="316" y="168" text-anchor="middle" font-size="10" fill="#4d4d4d">opcode/funct3/7</text>
+    <text x="316" y="182" text-anchor="middle" font-size="10" fill="#4d4d4d">&rarr; inst type + fn</text>
+    <text x="316" y="200" text-anchor="middle" font-size="10" font-weight="600" fill="#b3541e">custom-1 (ADDP1)</text>
+    <text x="316" y="214" text-anchor="middle" font-size="10" font-weight="600" fill="#b3541e">recognized here</text>
+  </g>
+
+  <!-- Stage 2 Reg Read -->
+  <g>
+    <rect x="416" y="126" width="160" height="100" rx="6" fill="#eaf2f8" stroke="#2e6b8f"/>
+    <text x="496" y="150" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Stage 2 &middot; Reg Read</text>
+    <text x="496" y="168" text-anchor="middle" font-size="10" fill="#4d4d4d">integer + FP RF</text>
+    <text x="496" y="182" text-anchor="middle" font-size="10" fill="#4d4d4d">scoreboard hazard</text>
+    <text x="496" y="196" text-anchor="middle" font-size="10" fill="#4d4d4d">check</text>
+  </g>
+
+  <!-- Stage 3 Execute -->
+  <g>
+    <rect x="596" y="126" width="160" height="100" rx="6" fill="#eaf2f8" stroke="#2e6b8f"/>
+    <text x="676" y="150" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Stage 3 &middot; Execute</text>
+    <text x="676" y="168" text-anchor="middle" font-size="10" fill="#4d4d4d">ALU / FPU / Mbox</text>
+    <text x="676" y="182" text-anchor="middle" font-size="10" fill="#4d4d4d">branch resolve</text>
+    <text x="676" y="198" text-anchor="middle" font-size="10" font-weight="600" fill="#b3541e">ADDP1 computed</text>
+  </g>
+
+  <!-- Stage 4 Memory -->
+  <g>
+    <rect x="776" y="126" width="160" height="100" rx="6" fill="#eaf2f8" stroke="#2e6b8f"/>
+    <text x="856" y="150" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Stage 4 &middot; Memory</text>
+    <text x="856" y="168" text-anchor="middle" font-size="10" fill="#4d4d4d">D-Cache access</text>
+    <text x="856" y="182" text-anchor="middle" font-size="10" fill="#4d4d4d">load / store</text>
+    <text x="856" y="196" text-anchor="middle" font-size="10" fill="#4d4d4d">Sv39 translation</text>
+  </g>
+
+  <!-- Stage 5 Writeback -->
+  <g>
+    <rect x="956" y="126" width="160" height="100" rx="6" fill="#eaf2f8" stroke="#2e6b8f"/>
+    <text x="1036" y="150" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Stage 5 &middot; Writeback</text>
+    <text x="1036" y="168" text-anchor="middle" font-size="10" fill="#4d4d4d">commit to RF</text>
+    <text x="1036" y="182" text-anchor="middle" font-size="10" fill="#4d4d4d">bypass network</text>
+  </g>
+
+  <!-- ===================== memory subsystem ===================== -->
+  <rect x="40" y="268" width="540" height="140" rx="8" fill="none" stroke="#c9c9c9" stroke-dasharray="4 4"/>
+  <text x="60" y="288" font-size="12" font-weight="600" fill="#3c7a4d">MEMORY SUBSYSTEM &mdash; verified, no L2 present</text>
+
+  <g>
+    <rect x="56" y="306" width="230" height="96" rx="6" fill="#e9f4ec" stroke="#3c7a4d"/>
+    <text x="171" y="328" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">I-Cache + I-TLB</text>
+    <text x="171" y="346" text-anchor="middle" font-size="10" fill="#4d4d4d">16KB = 64 sets &times; 4 way</text>
+    <text x="171" y="360" text-anchor="middle" font-size="10" fill="#4d4d4d">&times; 16w block &times; 4B/word</text>
+    <text x="171" y="374" text-anchor="middle" font-size="10" fill="#4d4d4d">TLB: 4 entries</text>
+    <text x="171" y="388" text-anchor="middle" font-size="10" fill="#4d4d4d">replacement: RANDOM</text>
+  </g>
+
+  <g>
+    <rect x="326" y="306" width="230" height="96" rx="6" fill="#e9f4ec" stroke="#3c7a4d"/>
+    <text x="441" y="328" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">D-Cache + D-TLB</text>
+    <text x="441" y="346" text-anchor="middle" font-size="10" fill="#4d4d4d">16KB = 64 sets &times; 4 way</text>
+    <text x="441" y="360" text-anchor="middle" font-size="10" fill="#4d4d4d">&times; 8w block &times; 8B/word</text>
+    <text x="441" y="374" text-anchor="middle" font-size="10" fill="#4d4d4d">TLB: 4 entries</text>
+    <text x="441" y="388" text-anchor="middle" font-size="10" fill="#4d4d4d">replacement: RR</text>
+  </g>
+
+  <!-- ===================== execute units ===================== -->
+  <rect x="620" y="268" width="580" height="140" rx="8" fill="none" stroke="#c9c9c9" stroke-dasharray="4 4"/>
+  <text x="640" y="288" font-size="12" font-weight="600" fill="#3c7a4d">EXECUTE-STAGE UNITS</text>
+
+  <g>
+    <rect x="636" y="306" width="164" height="96" rx="6" fill="#e9f4ec" stroke="#3c7a4d"/>
+    <text x="718" y="330" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Base ALU</text>
+    <text x="718" y="348" text-anchor="middle" font-size="10" fill="#4d4d4d">add/sub/logic/shift</text>
+    <text x="718" y="362" text-anchor="middle" font-size="10" font-weight="600" fill="#b3541e">+ our ADDP1 op</text>
+    <text x="718" y="378" text-anchor="middle" font-size="10" fill="#4d4d4d">1 cycle</text>
+  </g>
+
+  <g>
+    <rect x="816" y="306" width="164" height="96" rx="6" fill="#e9f4ec" stroke="#3c7a4d"/>
+    <text x="898" y="330" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">FPU</text>
+    <text x="898" y="348" text-anchor="middle" font-size="10" fill="#4d4d4d">IEEE-754 SP/DP</text>
+    <text x="898" y="362" text-anchor="middle" font-size="10" fill="#4d4d4d">bsv_float (SW-style)</text>
+    <text x="898" y="376" text-anchor="middle" font-size="10" fill="#4d4d4d">hardfloat: False</text>
+  </g>
+
+  <g>
+    <rect x="996" y="306" width="144" height="96" rx="6" fill="#e9f4ec" stroke="#3c7a4d"/>
+    <text x="1068" y="330" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Mbox</text>
+    <text x="1068" y="348" text-anchor="middle" font-size="10" fill="#4d4d4d">mul: 1 cyc in/out</text>
+    <text x="1068" y="362" text-anchor="middle" font-size="10" fill="#4d4d4d">div: 32 cycles</text>
+  </g>
+
+  <!-- ===================== privilege / MMU / debug ===================== -->
+  <rect x="40" y="438" width="1160" height="80" rx="8" fill="none" stroke="#c9c9c9" stroke-dasharray="4 4"/>
+  <text x="60" y="458" font-size="12" font-weight="600" fill="#6b4c9a">PRIVILEGE / MMU / DEBUG &mdash; active in this build</text>
+
+  <g>
+    <rect x="56" y="468" width="270" height="36" rx="6" fill="#f1ecf8" stroke="#6b4c9a"/>
+    <text x="191" y="490" text-anchor="middle" font-size="11" fill="#2e2e2e">Sv39 MMU &middot; M / S / U privilege modes</text>
+  </g>
+  <g>
+    <rect x="346" y="468" width="220" height="36" rx="6" fill="#f1ecf8" stroke="#6b4c9a"/>
+    <text x="456" y="490" text-anchor="middle" font-size="11" fill="#2e2e2e">4&times; PMP regions</text>
+  </g>
+  <g>
+    <rect x="586" y="468" width="270" height="36" rx="6" fill="#f1ecf8" stroke="#6b4c9a"/>
+    <text x="721" y="490" text-anchor="middle" font-size="11" fill="#2e2e2e">JTAG DTM + Debug Module (spec 0.13)</text>
+  </g>
+  <g>
+    <rect x="876" y="468" width="264" height="36" rx="6" fill="#f1ecf8" stroke="#6b4c9a"/>
+    <text x="1008" y="490" text-anchor="middle" font-size="11" fill="#2e2e2e">32-bit physical address space</text>
+  </g>
+
+  <!-- ===================== AXI4 fabric (hub) ===================== -->
+  <rect x="40" y="548" width="1160" height="50" rx="8" fill="#fdf3ea" stroke="#b3541e" stroke-width="2"/>
+  <text x="620" y="578" text-anchor="middle" font-size="14" font-weight="600" fill="#b3541e">AXI4 / AXI4-Lite Bus Fabric &mdash; 64-bit width, ID width 4</text>
+
+  <!-- ===================== peripherals (external) ===================== -->
+  <g>
+    <rect x="60" y="638" width="200" height="70" rx="6" fill="#f4f4f4" stroke="#7a7a7a"/>
+    <text x="160" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">UART</text>
+    <text x="160" y="686" text-anchor="middle" font-size="10" fill="#4d4d4d">serial I/O</text>
+  </g>
+  <g>
+    <rect x="300" y="638" width="200" height="70" rx="6" fill="#f4f4f4" stroke="#7a7a7a"/>
+    <text x="400" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">CLINT</text>
+    <text x="400" y="686" text-anchor="middle" font-size="10" fill="#4d4d4d">timer + IPI</text>
+  </g>
+  <g>
+    <rect x="540" y="638" width="200" height="70" rx="6" fill="#f4f4f4" stroke="#7a7a7a"/>
+    <text x="640" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">BootROM</text>
+    <text x="640" y="686" text-anchor="middle" font-size="10" fill="#4d4d4d">reset vector @0x1000</text>
+  </g>
+  <g>
+    <rect x="780" y="638" width="200" height="70" rx="6" fill="#f4f4f4" stroke="#7a7a7a"/>
+    <text x="880" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">BRAM</text>
+    <text x="880" y="686" text-anchor="middle" font-size="10" fill="#4d4d4d">on-chip memory</text>
+  </g>
+  <g>
+    <rect x="1020" y="638" width="140" height="70" rx="6" fill="#f4f4f4" stroke="#7a7a7a"/>
+    <text x="1090" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Ext. Mem</text>
+    <text x="1090" y="686" text-anchor="middle" font-size="10" fill="#4d4d4d">64MB test mem</text>
+  </g>
+
+  <!-- ===================== legend ===================== -->
+  <g font-size="11">
+    <rect x="56" y="740" width="14" height="14" fill="#eaf2f8" stroke="#2e6b8f"/>
+    <text x="76" y="751" fill="#4d4d4d">Pipeline stage</text>
+
+    <rect x="196" y="740" width="14" height="14" fill="#e9f4ec" stroke="#3c7a4d"/>
+    <text x="216" y="751" fill="#4d4d4d">Memory / execute unit</text>
+
+    <rect x="376" y="740" width="14" height="14" fill="#f1ecf8" stroke="#6b4c9a"/>
+    <text x="396" y="751" fill="#4d4d4d">Privilege / debug</text>
+
+    <rect x="536" y="740" width="14" height="14" fill="#fdf3ea" stroke="#b3541e"/>
+    <text x="556" y="751" fill="#4d4d4d">Bus fabric / custom instruction path</text>
+
+    <rect x="796" y="740" width="14" height="14" fill="#f4f4f4" stroke="#7a7a7a"/>
+    <text x="816" y="751" fill="#4d4d4d">External peripheral</text>
+  </g>
+
+  <text x="60" y="790" font-size="11" fill="#4d4d4d">ISA: RV64IMAFDCSU_Zicsr_Zifencei &middot; No L2 cache in this build &middot; FPU is software-style (bsv_float), not HardFloat</text>
+  <text x="60" y="808" font-size="11" font-weight="600" fill="#b3541e">Orange path: our custom ADDP1 instruction &mdash; recognized in Decode, computed in Base ALU</text>
+  <text x="60" y="836" font-size="10" fill="#8a8a8a">Source of truth: sample_config/c64/core64.yaml, sample_config/c64/rv64i_isa.yaml, makefile.inc (this project's actual build, not generic Shakti docs)</text>
+</svg>
+</div>
+</body>
+</html>

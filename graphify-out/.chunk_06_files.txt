@@ -1,0 +1,20 @@
+D:\kevin stuff\Brave_Downloads\mainproject\docs\skills-reference\schedule.SKILL.md
+D:\kevin stuff\Brave_Downloads\mainproject\docs\skills-reference\setup-cowork.SKILL.md
+D:\kevin stuff\Brave_Downloads\mainproject\docs\skills-reference\setup-writing-style.SKILL.md
+D:\kevin stuff\Brave_Downloads\mainproject\graphify-out\converted\Kevin Jose Seminar_Abstract_c93315e2.md
+D:\kevin stuff\Brave_Downloads\mainproject\graphify-out\converted\Kevin Jose Seminar_Papers_Summary_831e1309.md
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\01-PATARA-FULL-EXPLAINER.md
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\02-GUIDE-APPROVAL-BRIEF.md
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\03-SUPPORTING-PAPERS.md
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\04-SLIDE-BY-SLIDE-CONTENT.md
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\SPEAKING-SCRIPT.md
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\Kevin Jose Seminar_Abstract.pdf
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\Seminar_Presentation_Template.md
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\Seminar_guidelines.pdf
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\points.md
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\points.txt
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\papers\A Self-Testing Framework for Verification and Validation of.pdf
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\papers\Functional_Verification_of_a_RISC-V_Vector_Accelerator.pdf
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\papers\Instiller_Toward_Efficient_and_Realistic_RTL_Fuzzing.pdf
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\papers\Polynomial_Formal_Verification_of_a_RISC-V_Processor.pdf
+D:\kevin stuff\Brave_Downloads\mainproject\seminar\seminarppt\papers\𝜒RVFormal Formal verification of RISC-V processor Chisel designs.pdf

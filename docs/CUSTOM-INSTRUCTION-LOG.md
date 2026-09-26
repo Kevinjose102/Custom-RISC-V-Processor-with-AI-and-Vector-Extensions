@@ -17,6 +17,19 @@ pointless. The goal was to design a custom instruction that does **more
 useful work per instruction** and then prove, with cycle counts from the real
 processor, that it makes the workload faster.
 
+### Status at a glance
+
+| Item | Status |
+|---|---|
+| PyTorch profiling (laptop) | ✅ |
+| Shakti profiling (every operation, on the real core) | ✅ section 11 |
+| FDOT2.S (packed dot product) | ✅ built and verified, 1.13× |
+| PFMA.S (2-lane parallel FMA, extra FMA unit) | ✅ built and verified |
+| PFMA on pointwise / depthwise / first conv | ✅ 1.5–1.7× / 1.56× / 1.98× |
+| Whole-model estimate | ✅ 31.9 B → 19.8 B cycles, ≈ 1.61× |
+| PRELU6.S (packed ReLU6) | 🟡 designed, not yet built (section 14) |
+| Complete network run on Shakti | ❌ |
+
 ---
 
 ## 2. Environment (for reference)
@@ -394,15 +407,183 @@ Layers are grouped by K: small (K ≤ 192) use the small-K averages
    then scaled by MAC count. The inner loop is the same for every output, so the
    cycles per MAC carry over, but real layers have far more pixels and their
    cache behaviour may differ.
-2. Only **pointwise** layers are accelerated. Depthwise convolution, the first
-   convolution and the GRU are not yet, so the whole-model speedup will be
-   lower than 1.6× (Amdahl's law).
+2. This table covers **pointwise** layers only. Sections 11–13 extend the
+   measurements to the rest of the network.
 3. The input data was pseudo-random. FMA timing doesn't depend on the values,
    so this doesn't affect cycle counts.
 
 ---
 
-## 11. How to reproduce
+## 11. Shakti profiling: where the time goes on the real processor
+
+The first profile was measured with PyTorch on a laptop CPU. That doesn't show
+where **Shakti** spends its time, so every operation in MobileNetV2 + GRU was
+written as a simple C kernel (`bench/profile.c`), run on **baseline** Shakti
+with real layer shapes, and timed with `mcycle`. The cost per MAC (or per
+element) was then multiplied by how many times each operation runs in one full
+inference (8 frames + GRU). `bench/prof_report.py` does that calculation.
+
+The operation counts were computed from the MobileNetV2 architecture and match
+the PyTorch profile exactly (depthwise 20,716,416 MACs and pointwise
+267,939,840 MACs per frame).
+
+| Operation | Cycles per unit | Count (1 inference) | Cycles | Share |
+|---|---|---|---|---|
+| Pointwise, K ≤ 192 | 11.65 / MAC | 1,359,167,488 | 15,833 M | 49.6% |
+| Pointwise, K ≥ 320 | 13.93 / MAC | 784,351,232 | 10,925 M | 34.2% |
+| Depthwise 3×3 | 16.74 / MAC | 165,731,328 | 2,775 M | 8.7% |
+| First conv 3×3 | 17.70 / MAC | 86,704,128 | 1,535 M | 4.8% |
+| ReLU6 | 14.25 / element | 48,846,336 | 696 M | 2.2% |
+| GRU matrix-vector + linear | 12.02 / MAC | 9,437,696 | 113 M | 0.4% |
+| Residual add | 14.64 / element | 1,731,072 | 25 M | 0.1% |
+| Average pool | 10.64 / element | 501,760 | 5 M | 0.0% |
+| GRU sigmoid/tanh (software exp) | 124.09 / element | 6,144 | 1 M | 0.0% |
+| **Total** | | | **31,909 M** | |
+
+**What it shows:**
+
+1. **Pointwise convolution is 84% of the time on Shakti**, which confirms the
+   choice of pointwise as the first target with numbers from the processor
+   itself.
+2. **Depthwise and the first conv are the most expensive per MAC** (about
+   17–18 cycles). Their inner loops are short (9 or 27 MACs), so loop and
+   address overhead is large.
+3. **Every convolution pays 11–18 cycles per MAC**, because each MAC waits for
+   the previous FMA to finish (the FPU does one operation at a time).
+4. **The GRU is only 0.4%.** Accelerating it barely changes the total
+   (Amdahl's law).
+
+---
+
+## 12. Reusing PFMA for depthwise and the first conv (software only)
+
+PFMA computes two outputs at once when both use **the same weight** and their
+inputs sit **side by side in memory**. Both depthwise and the first conv have
+that shape (two neighbouring output pixels share the same weights), so no new
+hardware was needed. Only the C loops changed.
+
+### The alignment problem and the "pair copy"
+
+A 64-bit `fld` must start at an 8-byte boundary. For output pixels `x` and
+`x+1`, each weight tap needs the inputs `in[x+kx]` and `in[x+1+kx]` (stride 1).
+They are neighbours, but half the time they start at an odd position.
+
+**Fix:** before the layer, build a **pair copy** of the input where each 8-byte
+slot holds the two values one tap needs:
+
+| Layer | Stride | Pair slot holds |
+|---|---|---|
+| Depthwise | 1 | `(in[i], in[i+1])` |
+| First conv | 2 | `(in[i], in[i+2])` |
+
+Every tap then becomes one aligned `fld`. **The cost of building the copy is
+included in the PFMA timings**, so the comparison stays fair. (In a full
+network, the previous layer could write its output directly in this layout,
+making the copy free. The numbers below are the pessimistic case.)
+
+### Results (all bit-identical to the baseline, `tohost = 1`)
+
+| Kernel (file) | Baseline | PFMA kernel only | PFMA + pair copy | Speedup (fair) |
+|---|---|---|---|---|
+| Depthwise 3×3, 32 ch, 8×8 (`bench/dw.c`) | 16.99 cyc/MAC | 9.23 | 10.86 | **1.56×** (1.84× kernel only) |
+| First conv 3×3, stride 2, 3→32 ch (`bench/conv0.c`) | 18.28 cyc/MAC | 9.09 | 9.22 | **1.98×** (2.01× kernel only) |
+
+**Why these gain more than pointwise:** their loops are short, so the baseline
+wastes a lot of cycles on loop overhead. PFMA halves the number of loop
+iterations. For the first conv the pair copy is nearly free, because there are
+only 3 input channels and the copy is shared by all 32 output channels.
+
+**Caveat:** only stride-1 depthwise was measured. The 5 stride-2 depthwise
+layers need the `(in[i], in[i+2])` layout (the same one the first conv uses)
+and are assumed to gain the same.
+
+---
+
+## 13. Whole-model estimate (1 inference = 8 frames + GRU)
+
+Measured cycles per unit × operation counts from section 11:
+
+| Version | Total cycles | Speedup |
+|---|---|---|
+| Baseline Shakti | 31.9 B | 1.00× |
+| + PFMA on pointwise | 21.5 B | 1.48× |
+| + PFMA on depthwise (including the copy) | 20.5 B | 1.55× |
+| **+ PFMA on first conv** | **19.8 B** | **≈ 1.61×** |
+
+Still not accelerated: ReLU6 (2.2%), GRU (0.4%), residual add and pooling
+(about 0.1%).
+
+---
+
+## 14. PRELU6.S: second hardware instruction (in progress)
+
+**Status: code changes prepared; not yet built or tested.**
+
+### What it does
+
+```
+PRELU6.S fd, fs1        fs1 = [x1 | x0]  →  fd = [clamp(x1) | clamp(x0)]
+clamp(x) = 0 if x < 0,  6 if x > 6,  otherwise x
+```
+
+It applies ReLU6 to two FP32 values at once. It is pure bit logic, with no
+floating-point unit involved, so it completes in **one cycle**:
+
+- sign bit set and value not zero → `0`
+- sign bit clear and bits `> 0x40C00000` (6.0) → `0x40C00000`. Positive
+  floats sort the same way as integers, so a plain integer compare works.
+- otherwise → unchanged. `-0.0` stays `-0.0`, matching the C code
+  `v < 0 ? 0 : v` bit for bit.
+
+(Difference from C: a positive NaN becomes 6.0 instead of staying NaN. NaNs
+don't occur in normal inference.)
+
+### Encoding
+
+All three custom instructions share custom-2 and are told apart by the fmt
+bits `[26:25]`:
+
+| fmt | Instruction | FPU opcode (`fn`) | Assembly |
+|---|---|---|---|
+| `00` | FDOT2.S | `0110` | `.insn r4 0x5B, 0, 0, fd, fs1, fs2, fs3` |
+| `10` | PFMA.S | `0111` | `.insn r4 0x5B, 0, 2, fd, fs1, fs2, fs3` |
+| `01` | PRELU6.S | `0101` | `.insn r4 0x5B, 0, 1, fd, fs1, fs1, fs1` |
+
+### Planned code changes
+
+`src/decoder.bsv`: the remap no longer checks bit 25 (any custom-2 word is
+remapped), and the `fn` line becomes:
+
+```bsv
+fn = (inst_in[26:25] == 2'b10) ? 4'b0111 : ((inst_in[26:25] == 2'b01) ? 4'b0101 : 4'b0110);
+```
+
+`src/fpu/hardfloat/fpu_hardfloat.bsv`: a new branch in `rule start`, just
+before the FMA branch, that computes the result immediately and sends it out
+without starting a multi-cycle operation:
+
+```bsv
+else if(opcode == 4'b0101) begin            // PRELU6.S: packed clamp to [0,6], 1 cycle
+  Bit#(64) r1 = input_packet.operand1;
+  Bit#(32) l0 = r1[31:0];
+  Bit#(32) l1 = r1[63:32];
+  Bit#(32) q0 = (l0[31]==1 && l0[30:0]!=0) ? 0 : ((l0[31]==0 && l0 > 32'h40C00000) ? 32'h40C00000 : l0);
+  Bit#(32) q1 = (l1[31]==1 && l1[30:0]!=0) ? 0 : ((l1[31]==0 && l1 > 32'h40C00000) ? 32'h40C00000 : l1);
+  tx_fbox_out.u.enq(XBoxOutput{valid: True, data: {q1, q0}, fflags: 0});
+end
+```
+
+### Still to do
+
+1. Apply the edits and rebuild the processor.
+2. Run `bench/relu.c` (baseline C ReLU6 vs PRELU6 on 2,048 values, with a
+   bit-exact check).
+3. Rerun the FMADD regression test and `bench/dw.c`, to confirm the decoder
+   change didn't break normal FMADD or PFMA.
+
+---
+
+## 15. How to reproduce
 
 ```bash
 cd ~/projects/c-class
@@ -430,17 +611,29 @@ Backups of the working files are in `~/fdot2_backup/` and `~/pfma_backup/`.
 
 ---
 
-## 12. Next steps
-
-1. **GRU:** its matrix-vector products are the same multiply-accumulate pattern,
-   so PFMA can speed them up too. This completes the "MobileNetV2 + GRU" story.
-2. **Software tuning:** loop unrolling to cut the remaining loop overhead per FMA.
-3. **Report:** profiling → bottleneck → FDOT2 → insight (FMA throughput) →
-   PFMA → measured 1.5–1.7× per layer, ≈1.6× on all pointwise layers.
+Other benchmark files follow the same build and run steps; replace
+`bench/bench.c` with `bench/profile.c`, `bench/dw.c`, `bench/conv0.c` or
+`bench/relu.c`. For the profile, run `python3 ../bench/prof_report.py` from
+`bin/` after the simulation.
 
 ---
 
-## 13. Glossary
+## 16. Next steps
+
+1. **Finish PRELU6** (section 14): build, test, regression.
+2. **Pipelined FPU:** let a new FMA start before the previous one finishes.
+   This would speed up every operation, and allows a "combinations"
+   comparison: PFMA only vs pipelining only vs both.
+3. **Load/store optimization:** for example, a load that also advances the
+   pointer, to cut instructions in every inner loop.
+4. **GRU with PFMA:** software only (only 0.4% of the time, but it completes the
+   "MobileNetV2 + GRU" coverage).
+5. **Run the complete network** in C on Shakti (reduced input size) and
+   compare baseline vs custom end to end.
+
+---
+
+## 17. Glossary
 
 | Term | Meaning |
 |---|---|

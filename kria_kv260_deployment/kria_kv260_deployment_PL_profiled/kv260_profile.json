@@ -1,0 +1,2784 @@
+{
+  "video_meta": {
+    "path": "/home/ubuntu/Downloads/kria_kv260_deployment_PL_profiled_v2/kria_kv260_deployment_PL_profiled/test_videos/anomaly_sample.mp4",
+    "source_fps": 30.0,
+    "source_frames": 819,
+    "source_duration_s": 27.3,
+    "stride": 30,
+    "sampled_frames": 16,
+    "sample_indices": [
+      0,
+      30,
+      60,
+      90,
+      120,
+      150,
+      180,
+      210,
+      240,
+      270,
+      300,
+      330,
+      360,
+      390,
+      420,
+      450
+    ]
+  },
+  "result": {
+    "label": "Anomaly",
+    "confidence": 98.86948466300964,
+    "normal_pct": 1.13051263615489,
+    "anomaly_pct": 98.86948466300964
+  },
+  "aggregate": {
+    "overlay_program": {
+      "seconds": 16.04502887,
+      "count": 1,
+      "bytes": 0
+    },
+    "pynq_buffer_allocate": {
+      "seconds": 0.024144519,
+      "count": 1,
+      "bytes": 0
+    },
+    "driver_init": {
+      "seconds": 16.069735182,
+      "count": 1,
+      "bytes": 0
+    },
+    "model_npz_load": {
+      "seconds": 0.01869409,
+      "count": 1,
+      "bytes": 0
+    },
+    "static_weight_pack": {
+      "seconds": 10.687629807000002,
+      "count": 25,
+      "bytes": 0
+    },
+    "model_setup_weight_pack": {
+      "seconds": 10.823443705,
+      "count": 1,
+      "bytes": 0
+    },
+    "runner_init": {
+      "seconds": 10.860335072,
+      "count": 1,
+      "bytes": 0
+    },
+    "video_open_metadata": {
+      "seconds": 0.77425266,
+      "count": 1,
+      "bytes": 0
+    },
+    "video_seek_decode": {
+      "seconds": 16.436650520999997,
+      "count": 16,
+      "bytes": 0
+    },
+    "preprocess": {
+      "seconds": 0.8980638219999999,
+      "count": 16,
+      "bytes": 0
+    },
+    "input_quantize": {
+      "seconds": 0.034726501,
+      "count": 16,
+      "bytes": 0
+    },
+    "conv_tiling": {
+      "seconds": 0.31842255900000016,
+      "count": 400,
+      "bytes": 0
+    },
+    "fmap_pack": {
+      "seconds": 0.16031486199999986,
+      "count": 400,
+      "bytes": 0
+    },
+    "pl_configure": {
+      "seconds": 0.043463945000000004,
+      "count": 400,
+      "bytes": 0
+    },
+    "kernel_cma_stage": {
+      "seconds": 0.085346282,
+      "count": 1088,
+      "bytes": 18448384
+    },
+    "cdma_kernel_h2bram": {
+      "seconds": 0.07626337700000001,
+      "count": 1088,
+      "bytes": 18448384
+    },
+    "fmap_cma_stage_initial": {
+      "seconds": 0.10174081,
+      "count": 1088,
+      "bytes": 89378816
+    },
+    "cdma_fmap_initial_h2bram": {
+      "seconds": 0.1002773019999999,
+      "count": 1088,
+      "bytes": 89378816
+    },
+    "fmap_initial_service": {
+      "seconds": 0.25062029700000016,
+      "count": 1088,
+      "bytes": 0
+    },
+    "fmap_cma_stage_refill": {
+      "seconds": 0.07583489200000004,
+      "count": 720,
+      "bytes": 65800192
+    },
+    "cdma_fmap_refill_h2bram": {
+      "seconds": 0.07077588699999991,
+      "count": 720,
+      "bytes": 65800192
+    },
+    "fmap_refill_service": {
+      "seconds": 0.17906995000000003,
+      "count": 720,
+      "bytes": 0
+    },
+    "pl_run_wall": {
+      "seconds": 2.8702763050000013,
+      "count": 1088,
+      "bytes": 0
+    },
+    "pl_compute_handshake_est": {
+      "seconds": 2.6912063550000007,
+      "count": 1088,
+      "bytes": 0
+    },
+    "cdma_output_bram2host": {
+      "seconds": 0.07138445199999997,
+      "count": 1088,
+      "bytes": 44781568
+    },
+    "output_cma_invalidate_view": {
+      "seconds": 0.3044376620000002,
+      "count": 1088,
+      "bytes": 0
+    },
+    "output_reconstruct": {
+      "seconds": 20.649404174999994,
+      "count": 1088,
+      "bytes": 0
+    },
+    "conv_total": {
+      "seconds": 25.149267570999992,
+      "count": 400,
+      "bytes": 0
+    },
+    "maxpool": {
+      "seconds": 4.883022292,
+      "count": 48,
+      "bytes": 0
+    },
+    "fire_concat": {
+      "seconds": 0.019349874999999992,
+      "count": 128,
+      "bytes": 0
+    },
+    "feature_dequant": {
+      "seconds": 0.010408976,
+      "count": 16,
+      "bytes": 0
+    },
+    "gap": {
+      "seconds": 0.009647260999999999,
+      "count": 16,
+      "bytes": 0
+    },
+    "spatial_frame_total": {
+      "seconds": 31.045031299999998,
+      "count": 16,
+      "bytes": 0
+    },
+    "video_release": {
+      "seconds": 0.001651103,
+      "count": 1,
+      "bytes": 0
+    },
+    "tcn_stack": {
+      "seconds": 0.000200411,
+      "count": 1,
+      "bytes": 0
+    },
+    "tcn_stage1_weight_dequant": {
+      "seconds": 0.015953573,
+      "count": 1,
+      "bytes": 0
+    },
+    "tcn_stage1_conv": {
+      "seconds": 0.08941788,
+      "count": 1,
+      "bytes": 0
+    },
+    "tcn_stage1_bn_relu": {
+      "seconds": 0.007718732,
+      "count": 1,
+      "bytes": 0
+    },
+    "tcn_stage2_weight_dequant": {
+      "seconds": 0.00713735,
+      "count": 1,
+      "bytes": 0
+    },
+    "tcn_stage2_conv": {
+      "seconds": 0.030190962,
+      "count": 1,
+      "bytes": 0
+    },
+    "tcn_stage2_bn_relu": {
+      "seconds": 0.004654981,
+      "count": 1,
+      "bytes": 0
+    },
+    "temporal_mean_pool": {
+      "seconds": 0.000220922,
+      "count": 1,
+      "bytes": 0
+    },
+    "classifier_weight_dequant": {
+      "seconds": 0.003016329,
+      "count": 1,
+      "bytes": 0
+    },
+    "classifier_linear": {
+      "seconds": 0.000105736,
+      "count": 1,
+      "bytes": 0
+    },
+    "softmax": {
+      "seconds": 0.000242793,
+      "count": 1,
+      "bytes": 0
+    },
+    "tcn_total": {
+      "seconds": 0.15922458,
+      "count": 1,
+      "bytes": 0
+    },
+    "video_total": {
+      "seconds": 48.424584799,
+      "count": 1,
+      "bytes": 0
+    }
+  },
+  "layers": {
+    "features.0": {
+      "static_weight_pack": {
+        "seconds": 0.093086609,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.04130734500000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.013978558999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0020166059999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.032029712999999994,
+        "count": 512,
+        "bytes": 2031616
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.035009193000000015,
+        "count": 512,
+        "bytes": 2031616
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.055004067000000004,
+        "count": 512,
+        "bytes": 55115776
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.05577127700000002,
+        "count": 512,
+        "bytes": 55115776
+      },
+      "fmap_initial_service": {
+        "seconds": 0.13336936299999996,
+        "count": 512,
+        "bytes": 0
+      },
+      "fmap_cma_stage_refill": {
+        "seconds": 0.05421010600000006,
+        "count": 512,
+        "bytes": 55115776
+      },
+      "cdma_fmap_refill_h2bram": {
+        "seconds": 0.05482140299999995,
+        "count": 512,
+        "bytes": 55115776
+      },
+      "fmap_refill_service": {
+        "seconds": 0.13099236600000003,
+        "count": 512,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.34042989299999954,
+        "count": 512,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.20943752700000004,
+        "count": 512,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.028111279999999992,
+        "count": 512,
+        "bytes": 12845056
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.12974591800000007,
+        "count": 512,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 9.836361501000003,
+        "count": 512,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 10.723559818999998,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.3.squeeze": {
+      "static_weight_pack": {
+        "seconds": 0.063228892,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.018571157000000005,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.016231528999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0020142619999999997,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0020875430000000003,
+        "count": 16,
+        "bytes": 139264
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.000937388,
+        "count": 16,
+        "bytes": 139264
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0016982559999999996,
+        "count": 16,
+        "bytes": 1605632
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0016345810000000002,
+        "count": 16,
+        "bytes": 1605632
+      },
+      "fmap_initial_service": {
+        "seconds": 0.004066840999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_cma_stage_refill": {
+        "seconds": 0.002176203,
+        "count": 16,
+        "bytes": 1605632
+      },
+      "cdma_fmap_refill_h2bram": {
+        "seconds": 0.0017205789999999996,
+        "count": 16,
+        "bytes": 1605632
+      },
+      "fmap_refill_service": {
+        "seconds": 0.004991626000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.081677291,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.076685665,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0018340770000000001,
+        "count": 16,
+        "bytes": 1605632
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.004972288999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.22365962800000003,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.362685312,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.3.expand1x1": {
+      "static_weight_pack": {
+        "seconds": 0.064205858,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.012192224000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.004687287,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0017658359999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.002339772000000001,
+        "count": 32,
+        "bytes": 81920
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0021190220000000004,
+        "count": 32,
+        "bytes": 81920
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.003274374,
+        "count": 32,
+        "bytes": 3211264
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0033182410000000004,
+        "count": 32,
+        "bytes": 3211264
+      },
+      "fmap_initial_service": {
+        "seconds": 0.008067318,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.042112549000000006,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.042112549000000006,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0032156300000000006,
+        "count": 32,
+        "bytes": 3211264
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.009283272000000004,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.894039573,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.9899712480000001,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.3.expand3x3": {
+      "static_weight_pack": {
+        "seconds": 0.066541849,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.013257818000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.005152609000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0017345750000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.00256256,
+        "count": 32,
+        "bytes": 606208
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0021599930000000002,
+        "count": 32,
+        "bytes": 606208
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0034873630000000007,
+        "count": 32,
+        "bytes": 3686400
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.003555343,
+        "count": 32,
+        "bytes": 3686400
+      },
+      "fmap_initial_service": {
+        "seconds": 0.008510832999999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.170971205,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.170971205,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0033990310000000007,
+        "count": 32,
+        "bytes": 3211264
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.009525311000000002,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.883410945,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 1.1112233319999998,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.4.squeeze": {
+      "static_weight_pack": {
+        "seconds": 0.123958812,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.028347929,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.035042028,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0020746189999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0021563619999999998,
+        "count": 16,
+        "bytes": 270336
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0009508190000000001,
+        "count": 16,
+        "bytes": 270336
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0017573079999999997,
+        "count": 16,
+        "bytes": 1605632
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0016274220000000001,
+        "count": 16,
+        "bytes": 1605632
+      },
+      "fmap_initial_service": {
+        "seconds": 0.004153199,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_cma_stage_refill": {
+        "seconds": 0.006491506,
+        "count": 48,
+        "bytes": 4816896
+      },
+      "cdma_fmap_refill_h2bram": {
+        "seconds": 0.005129437999999999,
+        "count": 48,
+        "bytes": 4816896
+      },
+      "fmap_refill_service": {
+        "seconds": 0.013958137,
+        "count": 48,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.16494975600000003,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.150991619,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0016201429999999997,
+        "count": 16,
+        "bytes": 1605632
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.004977403,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.22489915300000005,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.47591505399999995,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.4.expand1x1": {
+      "static_weight_pack": {
+        "seconds": 0.064373711,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.012398314000000004,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.004769829000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001740968,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0024171019999999995,
+        "count": 32,
+        "bytes": 81920
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0021030140000000003,
+        "count": 32,
+        "bytes": 81920
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0032368740000000003,
+        "count": 32,
+        "bytes": 3211264
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0032711630000000005,
+        "count": 32,
+        "bytes": 3211264
+      },
+      "fmap_initial_service": {
+        "seconds": 0.007974996,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.04203969399999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.04203969399999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.003179896,
+        "count": 32,
+        "bytes": 3211264
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.008928159,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.8872481079999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.9830443370000002,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.4.expand3x3": {
+      "static_weight_pack": {
+        "seconds": 0.067548816,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.013245848999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.005219436000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001772845,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0027869589999999994,
+        "count": 32,
+        "bytes": 606208
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.002196832,
+        "count": 32,
+        "bytes": 606208
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0034607890000000006,
+        "count": 32,
+        "bytes": 3686400
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0035484709999999997,
+        "count": 32,
+        "bytes": 3686400
+      },
+      "fmap_initial_service": {
+        "seconds": 0.008516557000000001,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.170981178,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.170981178,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0032502559999999995,
+        "count": 32,
+        "bytes": 3211264
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.009573476,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.8884729099999998,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 1.116392951,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.6.squeeze": {
+      "static_weight_pack": {
+        "seconds": 0.188010679,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.010419754,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.008378596999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0018673289999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0019390070000000002,
+        "count": 16,
+        "bytes": 270336
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.000929301,
+        "count": 16,
+        "bytes": 270336
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.001301145,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.001551213,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "fmap_initial_service": {
+        "seconds": 0.0035770440000000006,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.137698322,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.137698322,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0016092979999999997,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.005038834,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.110161896,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.287587099,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.6.expand1x1": {
+      "static_weight_pack": {
+        "seconds": 0.188467393,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.009475128,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.003437024,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001631729,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0012346540000000002,
+        "count": 16,
+        "bytes": 73728
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0008470670000000001,
+        "count": 16,
+        "bytes": 73728
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.001409705,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0015688420000000002,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "fmap_initial_service": {
+        "seconds": 0.0036958530000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.036583303,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.036583303,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.001585844,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.004565322000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.43904737199999994,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.507748721,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.6.expand3x3": {
+      "static_weight_pack": {
+        "seconds": 0.191302139,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.010226475,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.0038479749999999996,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0016774840000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0015229349999999998,
+        "count": 16,
+        "bytes": 598016
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0013141830000000002,
+        "count": 16,
+        "bytes": 598016
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0015899150000000001,
+        "count": 16,
+        "bytes": 1722368
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0017209759999999997,
+        "count": 16,
+        "bytes": 1722368
+      },
+      "fmap_initial_service": {
+        "seconds": 0.004027963,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.156211666,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.156211666,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0016293120000000002,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.0050163560000000005,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.44009227799999995,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.631482321,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.7.squeeze": {
+      "static_weight_pack": {
+        "seconds": 0.373190124,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.012784259999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.01674802,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001902263,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0019997920000000002,
+        "count": 16,
+        "bytes": 532480
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.00110077,
+        "count": 16,
+        "bytes": 532480
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0014319010000000002,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0015755250000000001,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "fmap_initial_service": {
+        "seconds": 0.003737553,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_cma_stage_refill": {
+        "seconds": 0.0024519179999999995,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "cdma_fmap_refill_h2bram": {
+        "seconds": 0.0018111059999999998,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "fmap_refill_service": {
+        "seconds": 0.005227901,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.278696414,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.273468513,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.001643791,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.005121916,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.110760317,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.440720571,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.7.expand1x1": {
+      "static_weight_pack": {
+        "seconds": 0.186800823,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.009398249,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.0032685299999999995,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0016604430000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.001234004,
+        "count": 16,
+        "bytes": 73728
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0008449349999999999,
+        "count": 16,
+        "bytes": 73728
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.001466848,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.001559543,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "fmap_initial_service": {
+        "seconds": 0.003733874,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.036465309999999994,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.036465309999999994,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.001581303,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.0046115719999999995,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.44384055599999994,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.512233819,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.7.expand3x3": {
+      "static_weight_pack": {
+        "seconds": 0.190400232,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.010492465,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.003824381,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0017219070000000004,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.001608077,
+        "count": 16,
+        "bytes": 598016
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0010779709999999998,
+        "count": 16,
+        "bytes": 598016
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0016632659999999998,
+        "count": 16,
+        "bytes": 1722368
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.001711787,
+        "count": 16,
+        "bytes": 1722368
+      },
+      "fmap_initial_service": {
+        "seconds": 0.0041212359999999995,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.15645172400000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.15645172400000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0016329550000000002,
+        "count": 16,
+        "bytes": 1492992
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.005014852999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.44071387,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.632761447,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.9.squeeze": {
+      "static_weight_pack": {
+        "seconds": 0.557163909,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.009346579000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.003957029,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0017896889999999997,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0019653329999999997,
+        "count": 16,
+        "bytes": 532480
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.001073431,
+        "count": 16,
+        "bytes": 532480
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.000993814,
+        "count": 16,
+        "bytes": 346112
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0008425480000000001,
+        "count": 16,
+        "bytes": 346112
+      },
+      "fmap_initial_service": {
+        "seconds": 0.0025539630000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_cma_stage_refill": {
+        "seconds": 0.0012570539999999999,
+        "count": 16,
+        "bytes": 346112
+      },
+      "cdma_fmap_refill_h2bram": {
+        "seconds": 0.00089549,
+        "count": 16,
+        "bytes": 346112
+      },
+      "fmap_refill_service": {
+        "seconds": 0.0029324999999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.06825818100000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.065325681,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.000875437,
+        "count": 16,
+        "bytes": 346112
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.012448799000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.11565981700000003,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.22354029499999997,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.9.expand1x1": {
+      "static_weight_pack": {
+        "seconds": 0.420198328,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.009249305,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.0015137550000000003,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001598048,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0021849890000000005,
+        "count": 32,
+        "bytes": 212992
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0019744209999999996,
+        "count": 32,
+        "bytes": 212992
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0020764560000000004,
+        "count": 32,
+        "bytes": 692224
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0017143350000000002,
+        "count": 32,
+        "bytes": 692224
+      },
+      "fmap_initial_service": {
+        "seconds": 0.005193552000000001,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.033229290999999994,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.033229290999999994,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.001619108,
+        "count": 32,
+        "bytes": 692224
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.008280055999999997,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.45909212,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.533010415,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.9.expand3x3": {
+      "static_weight_pack": {
+        "seconds": 0.435885929,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.009560273999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.0017241319999999995,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001589935,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.003063419,
+        "count": 32,
+        "bytes": 1785856
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0027847379999999997,
+        "count": 32,
+        "bytes": 1785856
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0021817570000000007,
+        "count": 32,
+        "bytes": 921600
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0018698020000000003,
+        "count": 32,
+        "bytes": 921600
+      },
+      "fmap_initial_service": {
+        "seconds": 0.005471643,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.11007656199999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.11007656199999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0017549349999999996,
+        "count": 32,
+        "bytes": 692224
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.009115791999999998,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.4594483390000001,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.614176521,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.10.squeeze": {
+      "static_weight_pack": {
+        "seconds": 0.85070694,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.010256392000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.005446967999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001671126,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.001761778,
+        "count": 16,
+        "bytes": 794624
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0011838390000000001,
+        "count": 16,
+        "bytes": 794624
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.001006853,
+        "count": 16,
+        "bytes": 346112
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.000840089,
+        "count": 16,
+        "bytes": 346112
+      },
+      "fmap_initial_service": {
+        "seconds": 0.0025512259999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_cma_stage_refill": {
+        "seconds": 0.002682916,
+        "count": 32,
+        "bytes": 692224
+      },
+      "cdma_fmap_refill_h2bram": {
+        "seconds": 0.0018868110000000004,
+        "count": 32,
+        "bytes": 692224
+      },
+      "fmap_refill_service": {
+        "seconds": 0.006084952000000001,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.103873707,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.097788755,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.000840268,
+        "count": 16,
+        "bytes": 346112
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.00464512,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.11495500399999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.252526246,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.10.expand1x1": {
+      "static_weight_pack": {
+        "seconds": 0.417675486,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.008640087999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.001475322,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001584483,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0021507729999999995,
+        "count": 32,
+        "bytes": 212992
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.001998972,
+        "count": 32,
+        "bytes": 212992
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.002035911,
+        "count": 32,
+        "bytes": 692224
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0017979419999999999,
+        "count": 32,
+        "bytes": 692224
+      },
+      "fmap_initial_service": {
+        "seconds": 0.005232887999999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.026501639999999993,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.026501639999999993,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.001619534,
+        "count": 32,
+        "bytes": 692224
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.008320569,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.46018859199999995,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.526722887,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.10.expand3x3": {
+      "static_weight_pack": {
+        "seconds": 0.43620901,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.009706212,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.0017544160000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001675171,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0032052289999999987,
+        "count": 32,
+        "bytes": 1785856
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.002811873,
+        "count": 32,
+        "bytes": 1785856
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0022429710000000003,
+        "count": 32,
+        "bytes": 921600
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0018583809999999999,
+        "count": 32,
+        "bytes": 921600
+      },
+      "fmap_initial_service": {
+        "seconds": 0.005543586999999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.11011162000000001,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.11011162000000001,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0018040939999999996,
+        "count": 32,
+        "bytes": 692224
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.009663687,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.46337626299999995,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.619688898,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.11.squeeze": {
+      "static_weight_pack": {
+        "seconds": 1.127320991,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.010247965,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.005525955000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0017290349999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0019077870000000004,
+        "count": 16,
+        "bytes": 794624
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.00119057,
+        "count": 16,
+        "bytes": 794624
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0010202800000000001,
+        "count": 16,
+        "bytes": 346112
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0008651070000000003,
+        "count": 16,
+        "bytes": 346112
+      },
+      "fmap_initial_service": {
+        "seconds": 0.0026666150000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_cma_stage_refill": {
+        "seconds": 0.002819702,
+        "count": 32,
+        "bytes": 692224
+      },
+      "cdma_fmap_refill_h2bram": {
+        "seconds": 0.00186741,
+        "count": 32,
+        "bytes": 692224
+      },
+      "fmap_refill_service": {
+        "seconds": 0.0062670270000000005,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.10417017799999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.097903151,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0008594709999999999,
+        "count": 16,
+        "bytes": 346112
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.004837275,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.154247794,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.29303943699999996,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.11.expand1x1": {
+      "static_weight_pack": {
+        "seconds": 0.753681187,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.008990365,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.0017016469999999997,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0016187830000000002,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0022475930000000004,
+        "count": 32,
+        "bytes": 278528
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0020100919999999993,
+        "count": 32,
+        "bytes": 278528
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.00202765,
+        "count": 32,
+        "bytes": 692224
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0017430090000000002,
+        "count": 32,
+        "bytes": 692224
+      },
+      "fmap_initial_service": {
+        "seconds": 0.005203218999999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.03435590900000002,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.03435590900000002,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0016242300000000002,
+        "count": 32,
+        "bytes": 692224
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.008486749999999998,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.61331615,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.6887723870000001,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.11.expand3x3": {
+      "static_weight_pack": {
+        "seconds": 0.775811326,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.010086825,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.0019434559999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001637514,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.003403543,
+        "count": 32,
+        "bytes": 2375680
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0031210000000000005,
+        "count": 32,
+        "bytes": 2375680
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0021682010000000002,
+        "count": 32,
+        "bytes": 921600
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0018671459999999996,
+        "count": 32,
+        "bytes": 921600
+      },
+      "fmap_initial_service": {
+        "seconds": 0.005452843000000001,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.145795337,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.145795337,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0018581700000000001,
+        "count": 32,
+        "bytes": 692224
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.009883245,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.610960836,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.804070479,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.12.squeeze": {
+      "static_weight_pack": {
+        "seconds": 1.512557972,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.010762429999999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.007020388999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001717324,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0018848029999999998,
+        "count": 16,
+        "bytes": 1056768
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.0013196640000000001,
+        "count": 16,
+        "bytes": 1056768
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.000981098,
+        "count": 16,
+        "bytes": 346112
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.000876301,
+        "count": 16,
+        "bytes": 346112
+      },
+      "fmap_initial_service": {
+        "seconds": 0.002571323,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_cma_stage_refill": {
+        "seconds": 0.003745487,
+        "count": 48,
+        "bytes": 1038336
+      },
+      "cdma_fmap_refill_h2bram": {
+        "seconds": 0.00264365,
+        "count": 48,
+        "bytes": 1038336
+      },
+      "fmap_refill_service": {
+        "seconds": 0.008615441000000003,
+        "count": 48,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.13870638600000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.13009094499999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0008390260000000002,
+        "count": 16,
+        "bytes": 346112
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.004928656,
+        "count": 16,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.15304469899999998,
+        "count": 16,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.328341037,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.12.expand1x1": {
+      "static_weight_pack": {
+        "seconds": 0.760893031,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.00900512,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.001665836,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.001593045,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.0021772880000000003,
+        "count": 32,
+        "bytes": 278528
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.001993743,
+        "count": 32,
+        "bytes": 278528
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.002024796,
+        "count": 32,
+        "bytes": 692224
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0017108109999999998,
+        "count": 32,
+        "bytes": 692224
+      },
+      "fmap_initial_service": {
+        "seconds": 0.005121359000000001,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.034375027,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.034375027,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.001632168,
+        "count": 32,
+        "bytes": 692224
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.008331363,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.610859927,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.685878267,
+        "count": 16,
+        "bytes": 0
+      }
+    },
+    "features.12.expand3x3": {
+      "static_weight_pack": {
+        "seconds": 0.778409761,
+        "count": 1,
+        "bytes": 0
+      },
+      "conv_tiling": {
+        "seconds": 0.010454037000000001,
+        "count": 16,
+        "bytes": 0
+      },
+      "fmap_pack": {
+        "seconds": 0.002000153,
+        "count": 16,
+        "bytes": 0
+      },
+      "pl_configure": {
+        "seconds": 0.0016789259999999999,
+        "count": 16,
+        "bytes": 0
+      },
+      "kernel_cma_stage": {
+        "seconds": 0.003475267,
+        "count": 32,
+        "bytes": 2375680
+      },
+      "cdma_kernel_h2bram": {
+        "seconds": 0.003210546,
+        "count": 32,
+        "bytes": 2375680
+      },
+      "fmap_cma_stage_initial": {
+        "seconds": 0.0021992120000000003,
+        "count": 32,
+        "bytes": 921600
+      },
+      "cdma_fmap_initial_h2bram": {
+        "seconds": 0.0018774470000000004,
+        "count": 32,
+        "bytes": 921600
+      },
+      "fmap_initial_service": {
+        "seconds": 0.005505449000000001,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_run_wall": {
+        "seconds": 0.145554162,
+        "count": 32,
+        "bytes": 0
+      },
+      "pl_compute_handshake_est": {
+        "seconds": 0.145554162,
+        "count": 32,
+        "bytes": 0
+      },
+      "cdma_output_bram2host": {
+        "seconds": 0.0017651950000000004,
+        "count": 32,
+        "bytes": 692224
+      },
+      "output_cma_invalidate_view": {
+        "seconds": 0.009121668999999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "output_reconstruct": {
+        "seconds": 0.6115465269999999,
+        "count": 32,
+        "bytes": 0
+      },
+      "conv_total": {
+        "seconds": 0.804174671,
+        "count": 16,
+        "bytes": 0
+      }
+    }
+  },
+  "frames": [
+    {
+      "slot": 0,
+      "source_frame": 0,
+      "decoded": true,
+      "decode_s": 0.244794392,
+      "spatial_s": 2.16661973,
+      "frame_total_s": 2.411414122,
+      "preprocess_s": 0.133534749,
+      "input_quantize_s": 0.002978507,
+      "conv_tiling_s": 0.022788043,
+      "fmap_pack_s": 0.012027188,
+      "pl_configure_s": 0.003358185000000001,
+      "kernel_cma_stage_s": 0.007024066999999999,
+      "cdma_kernel_h2bram_s": 0.006101113999999999,
+      "fmap_cma_stage_initial_s": 0.007872386,
+      "cdma_fmap_initial_h2bram_s": 0.006532915000000002,
+      "fmap_cma_stage_refill_s": 0.006981253,
+      "cdma_fmap_refill_h2bram_s": 0.004851756,
+      "pl_run_wall_s": 0.19147148199999997,
+      "pl_compute_handshake_est_s": 0.17697270300000004,
+      "cdma_output_bram2host_s": 0.004723425000000002,
+      "output_cma_invalidate_view_s": 0.031708385000000006,
+      "output_reconstruct_s": 1.359263904,
+      "conv_total_s": 1.6833123630000002,
+      "maxpool_s": 0.334970761,
+      "fire_concat_s": 0.0015297529999999998,
+      "feature_dequant_s": 0.004158992,
+      "gap_s": 0.002696385
+    },
+    {
+      "slot": 1,
+      "source_frame": 30,
+      "decoded": true,
+      "decode_s": 1.171694712,
+      "spatial_s": 2.056584717,
+      "frame_total_s": 3.2282794289999996,
+      "preprocess_s": 0.067545792,
+      "input_quantize_s": 0.002565485,
+      "conv_tiling_s": 0.021964262000000005,
+      "fmap_pack_s": 0.011017154,
+      "pl_configure_s": 0.002899572,
+      "kernel_cma_stage_s": 0.00591903,
+      "cdma_kernel_h2bram_s": 0.0057088090000000065,
+      "fmap_cma_stage_initial_s": 0.007228065000000002,
+      "cdma_fmap_initial_h2bram_s": 0.006379203000000003,
+      "fmap_cma_stage_refill_s": 0.006258033000000003,
+      "cdma_fmap_refill_h2bram_s": 0.004583309999999999,
+      "pl_run_wall_s": 0.18223712399999992,
+      "pl_compute_handshake_est_s": 0.169035181,
+      "cdma_output_bram2host_s": 0.004535897000000002,
+      "output_cma_invalidate_view_s": 0.022121642000000018,
+      "output_reconstruct_s": 1.3702295030000005,
+      "conv_total_s": 1.6672472459999996,
+      "maxpool_s": 0.313950167,
+      "fire_concat_s": 0.0012828829999999996,
+      "feature_dequant_s": 0.0004393110000000004,
+      "gap_s": 0.0005030440000000002
+    },
+    {
+      "slot": 2,
+      "source_frame": 60,
+      "decoded": true,
+      "decode_s": 1.258691917,
+      "spatial_s": 2.023129432,
+      "frame_total_s": 3.2818213490000003,
+      "preprocess_s": 0.063966254,
+      "input_quantize_s": 0.0025154880000000006,
+      "conv_tiling_s": 0.021539864000000006,
+      "fmap_pack_s": 0.011108598000000008,
+      "pl_configure_s": 0.0029100449999999983,
+      "kernel_cma_stage_s": 0.006096894,
+      "cdma_kernel_h2bram_s": 0.005764910999999999,
+      "fmap_cma_stage_initial_s": 0.007221358999999998,
+      "cdma_fmap_initial_h2bram_s": 0.00629999,
+      "fmap_cma_stage_refill_s": 0.006140238000000003,
+      "cdma_fmap_refill_h2bram_s": 0.004488782000000002,
+      "pl_run_wall_s": 0.18221750400000036,
+      "pl_compute_handshake_est_s": 0.16926852300000017,
+      "cdma_output_bram2host_s": 0.004679940999999995,
+      "output_cma_invalidate_view_s": 0.02249884500000001,
+      "output_reconstruct_s": 1.341202784,
+      "conv_total_s": 1.6416387559999985,
+      "maxpool_s": 0.30945744399999997,
+      "fire_concat_s": 0.0015154929999999997,
+      "feature_dequant_s": 0.0004982509999999999,
+      "gap_s": 0.000523108
+    },
+    {
+      "slot": 3,
+      "source_frame": 90,
+      "decoded": true,
+      "decode_s": 1.893532322,
+      "spatial_s": 1.954002488,
+      "frame_total_s": 3.84753481,
+      "preprocess_s": 0.05172866100000001,
+      "input_quantize_s": 0.002277119000000001,
+      "conv_tiling_s": 0.019965359000000002,
+      "fmap_pack_s": 0.010513046999999998,
+      "pl_configure_s": 0.0027469090000000022,
+      "kernel_cma_stage_s": 0.005635635999999999,
+      "cdma_kernel_h2bram_s": 0.005681687000000008,
+      "fmap_cma_stage_initial_s": 0.006915832000000004,
+      "cdma_fmap_initial_h2bram_s": 0.0063347040000000035,
+      "fmap_cma_stage_refill_s": 0.005426191000000007,
+      "cdma_fmap_refill_h2bram_s": 0.004425159000000007,
+      "pl_run_wall_s": 0.18015700300000015,
+      "pl_compute_handshake_est_s": 0.16813577800000012,
+      "cdma_output_bram2host_s": 0.004367650000000006,
+      "output_cma_invalidate_view_s": 0.020551859000000006,
+      "output_reconstruct_s": 1.2997564559999972,
+      "conv_total_s": 1.587435332,
+      "maxpool_s": 0.3076905200000001,
+      "fire_concat_s": 0.0012902030000000002,
+      "feature_dequant_s": 0.00040910100000000026,
+      "gap_s": 0.0004681580000000002
+    },
+    {
+      "slot": 4,
+      "source_frame": 120,
+      "decoded": true,
+      "decode_s": 1.659328763,
+      "spatial_s": 1.968471652,
+      "frame_total_s": 3.6278004150000003,
+      "preprocess_s": 0.04816260100000003,
+      "input_quantize_s": 0.002123231999999999,
+      "conv_tiling_s": 0.02096373600000001,
+      "fmap_pack_s": 0.010455648000000005,
+      "pl_configure_s": 0.0029121240000000038,
+      "kernel_cma_stage_s": 0.005764705000000009,
+      "cdma_kernel_h2bram_s": 0.005540127000000006,
+      "fmap_cma_stage_initial_s": 0.006797019000000005,
+      "cdma_fmap_initial_h2bram_s": 0.0062203760000000136,
+      "fmap_cma_stage_refill_s": 0.005242029000000002,
+      "cdma_fmap_refill_h2bram_s": 0.004655994999999993,
+      "pl_run_wall_s": 0.18074985300000013,
+      "pl_compute_handshake_est_s": 0.16852683500000043,
+      "cdma_output_bram2host_s": 0.004627990999999998,
+      "output_cma_invalidate_view_s": 0.021199019999999985,
+      "output_reconstruct_s": 1.3106772209999962,
+      "conv_total_s": 1.601165162000001,
+      "maxpool_s": 0.311849316,
+      "fire_concat_s": 0.0012987769999999992,
+      "feature_dequant_s": 0.00041907200000000037,
+      "gap_s": 0.0004718709999999996
+    },
+    {
+      "slot": 5,
+      "source_frame": 150,
+      "decoded": true,
+      "decode_s": 0.514353867,
+      "spatial_s": 1.899433171,
+      "frame_total_s": 2.413787038,
+      "preprocess_s": 0.048159514000000014,
+      "input_quantize_s": 0.002379552,
+      "conv_tiling_s": 0.018740576000000023,
+      "fmap_pack_s": 0.009559726000000011,
+      "pl_configure_s": 0.0025632489999999983,
+      "kernel_cma_stage_s": 0.004818453000000021,
+      "cdma_kernel_h2bram_s": 0.0042149369999999915,
+      "fmap_cma_stage_initial_s": 0.006018910000000002,
+      "cdma_fmap_initial_h2bram_s": 0.006291150999999974,
+      "fmap_cma_stage_refill_s": 0.004118592999999997,
+      "cdma_fmap_refill_h2bram_s": 0.004329085999999996,
+      "pl_run_wall_s": 0.17759368200000014,
+      "pl_compute_handshake_est_s": 0.16711865799999992,
+      "cdma_output_bram2host_s": 0.004525118000000005,
+      "output_cma_invalidate_view_s": 0.016588572000000093,
+      "output_reconstruct_s": 1.2722576139999981,
+      "conv_total_s": 1.543863699000001,
+      "maxpool_s": 0.30095180499999996,
+      "fire_concat_s": 0.00102629,
+      "feature_dequant_s": 0.00038149699999999974,
+      "gap_s": 0.000466485
+    },
+    {
+      "slot": 6,
+      "source_frame": 180,
+      "decoded": true,
+      "decode_s": 0.566323962,
+      "spatial_s": 1.90003514,
+      "frame_total_s": 2.466359102,
+      "preprocess_s": 0.04771739199999997,
+      "input_quantize_s": 0.0022026700000000003,
+      "conv_tiling_s": 0.019668996999999994,
+      "fmap_pack_s": 0.009445859000000001,
+      "pl_configure_s": 0.002766719000000001,
+      "kernel_cma_stage_s": 0.005149039000000015,
+      "cdma_kernel_h2bram_s": 0.004441231000000032,
+      "fmap_cma_stage_initial_s": 0.0060019529999999904,
+      "cdma_fmap_initial_h2bram_s": 0.006229654000000008,
+      "fmap_cma_stage_refill_s": 0.004220599999999977,
+      "cdma_fmap_refill_h2bram_s": 0.004398510000000005,
+      "pl_run_wall_s": 0.17815675200000025,
+      "pl_compute_handshake_est_s": 0.1676487810000009,
+      "cdma_output_bram2host_s": 0.004429891000000005,
+      "output_cma_invalidate_view_s": 0.017697751999999928,
+      "output_reconstruct_s": 1.2698614630000025,
+      "conv_total_s": 1.5457212819999988,
+      "maxpool_s": 0.2997095190000001,
+      "fire_concat_s": 0.0011758399999999992,
+      "feature_dequant_s": 0.00041034000000000036,
+      "gap_s": 0.0004549599999999999
+    },
+    {
+      "slot": 7,
+      "source_frame": 210,
+      "decoded": true,
+      "decode_s": 1.099300874,
+      "spatial_s": 1.887177779,
+      "frame_total_s": 2.986478653,
+      "preprocess_s": 0.04793261800000004,
+      "input_quantize_s": 0.002015147000000002,
+      "conv_tiling_s": 0.018658135999999964,
+      "fmap_pack_s": 0.009599533999999993,
+      "pl_configure_s": 0.0025258089999999934,
+      "kernel_cma_stage_s": 0.004852155999999989,
+      "cdma_kernel_h2bram_s": 0.0040790489999999735,
+      "fmap_cma_stage_initial_s": 0.005976849999999992,
+      "cdma_fmap_initial_h2bram_s": 0.006187085000000016,
+      "fmap_cma_stage_refill_s": 0.004021717999999973,
+      "cdma_fmap_refill_h2bram_s": 0.004362621999999983,
+      "pl_run_wall_s": 0.17754590100000023,
+      "pl_compute_handshake_est_s": 0.16731181699999986,
+      "cdma_output_bram2host_s": 0.0043532529999999875,
+      "output_cma_invalidate_view_s": 0.015973688000000097,
+      "output_reconstruct_s": 1.2640475079999955,
+      "conv_total_s": 1.533943027000003,
+      "maxpool_s": 0.299193276,
+      "fire_concat_s": 0.0010543040000000007,
+      "feature_dequant_s": 0.00038247399999999983,
+      "gap_s": 0.00044226499999999985
+    },
+    {
+      "slot": 8,
+      "source_frame": 240,
+      "decoded": true,
+      "decode_s": 1.202073607,
+      "spatial_s": 1.912419473,
+      "frame_total_s": 3.11449308,
+      "preprocess_s": 0.047469218000000035,
+      "input_quantize_s": 0.001945156,
+      "conv_tiling_s": 0.02058781200000004,
+      "fmap_pack_s": 0.010238607999999996,
+      "pl_configure_s": 0.0027623339999999948,
+      "kernel_cma_stage_s": 0.005299749999999985,
+      "cdma_kernel_h2bram_s": 0.004708415000000028,
+      "fmap_cma_stage_initial_s": 0.006140407999999972,
+      "cdma_fmap_initial_h2bram_s": 0.006274197000000009,
+      "fmap_cma_stage_refill_s": 0.004211593999999999,
+      "cdma_fmap_refill_h2bram_s": 0.0043857959999999765,
+      "pl_run_wall_s": 0.17796774499999923,
+      "pl_compute_handshake_est_s": 0.16746848699999917,
+      "cdma_output_bram2host_s": 0.0044138000000000024,
+      "output_cma_invalidate_view_s": 0.018240307999999872,
+      "output_reconstruct_s": 1.2769287620000007,
+      "conv_total_s": 1.5562272119999978,
+      "maxpool_s": 0.3016347509999999,
+      "fire_concat_s": 0.0013427499999999985,
+      "feature_dequant_s": 0.000578884,
+      "gap_s": 0.00046776200000000004
+    },
+    {
+      "slot": 9,
+      "source_frame": 270,
+      "decoded": true,
+      "decode_s": 1.559843757,
+      "spatial_s": 1.889828149,
+      "frame_total_s": 3.449671906,
+      "preprocess_s": 0.04727850499999997,
+      "input_quantize_s": 0.001906372,
+      "conv_tiling_s": 0.018323866000000022,
+      "fmap_pack_s": 0.009190951000000003,
+      "pl_configure_s": 0.002482710999999995,
+      "kernel_cma_stage_s": 0.004758382999999991,
+      "cdma_kernel_h2bram_s": 0.004058162999999969,
+      "fmap_cma_stage_initial_s": 0.005843150000000033,
+      "cdma_fmap_initial_h2bram_s": 0.006199096999999987,
+      "fmap_cma_stage_refill_s": 0.004053038000000023,
+      "cdma_fmap_refill_h2bram_s": 0.004327089999999985,
+      "pl_run_wall_s": 0.17723160299999963,
+      "pl_compute_handshake_est_s": 0.1670032189999997,
+      "cdma_output_bram2host_s": 0.004361669999999991,
+      "output_cma_invalidate_view_s": 0.016045967999999994,
+      "output_reconstruct_s": 1.2670460629999933,
+      "conv_total_s": 1.5354468560000019,
+      "maxpool_s": 0.3012396709999998,
+      "fire_concat_s": 0.0010075919999999981,
+      "feature_dequant_s": 0.0003788930000000008,
+      "gap_s": 0.0004395639999999999
+    },
+    {
+      "slot": 10,
+      "source_frame": 300,
+      "decoded": true,
+      "decode_s": 0.526038632,
+      "spatial_s": 1.908155319,
+      "frame_total_s": 2.434193951,
+      "preprocess_s": 0.047450835999999996,
+      "input_quantize_s": 0.002149513999999998,
+      "conv_tiling_s": 0.019726532000000047,
+      "fmap_pack_s": 0.00958487999999999,
+      "pl_configure_s": 0.002606682000000006,
+      "kernel_cma_stage_s": 0.005233028000000001,
+      "cdma_kernel_h2bram_s": 0.005217874999999997,
+      "fmap_cma_stage_initial_s": 0.0066147509999999465,
+      "cdma_fmap_initial_h2bram_s": 0.006226306999999959,
+      "fmap_cma_stage_refill_s": 0.004928205000000019,
+      "cdma_fmap_refill_h2bram_s": 0.004381954000000014,
+      "pl_run_wall_s": 0.1787692150000002,
+      "pl_compute_handshake_est_s": 0.16753603400000072,
+      "cdma_output_bram2host_s": 0.004350391000000016,
+      "output_cma_invalidate_view_s": 0.01832779100000001,
+      "output_reconstruct_s": 1.2722263270000074,
+      "conv_total_s": 1.551645124000002,
+      "maxpool_s": 0.30235294999999995,
+      "fire_concat_s": 0.0012567969999999987,
+      "feature_dequant_s": 0.00037744399999999935,
+      "gap_s": 0.00043764599999999987
+    },
+    {
+      "slot": 11,
+      "source_frame": 330,
+      "decoded": true,
+      "decode_s": 0.823054788,
+      "spatial_s": 1.885002982,
+      "frame_total_s": 2.70805777,
+      "preprocess_s": 0.04874937999999995,
+      "input_quantize_s": 0.0019276550000000003,
+      "conv_tiling_s": 0.018656055000000032,
+      "fmap_pack_s": 0.00926900700000001,
+      "pl_configure_s": 0.002526145999999993,
+      "kernel_cma_stage_s": 0.004789574000000026,
+      "cdma_kernel_h2bram_s": 0.00402830500000001,
+      "fmap_cma_stage_initial_s": 0.00573965100000004,
+      "cdma_fmap_initial_h2bram_s": 0.006191485999999996,
+      "fmap_cma_stage_refill_s": 0.003923661000000009,
+      "cdma_fmap_refill_h2bram_s": 0.004322155000000001,
+      "pl_run_wall_s": 0.17694954699999998,
+      "pl_compute_handshake_est_s": 0.16690166900000114,
+      "cdma_output_bram2host_s": 0.00437758600000001,
+      "output_cma_invalidate_view_s": 0.016119135000000034,
+      "output_reconstruct_s": 1.2627334190000052,
+      "conv_total_s": 1.5312403200000055,
+      "maxpool_s": 0.2990248700000002,
+      "fire_concat_s": 0.001062363000000002,
+      "feature_dequant_s": 0.00038285599999999913,
+      "gap_s": 0.0004461089999999992
+    },
+    {
+      "slot": 12,
+      "source_frame": 360,
+      "decoded": true,
+      "decode_s": 1.163973158,
+      "spatial_s": 1.917000516,
+      "frame_total_s": 3.080973674,
+      "preprocess_s": 0.04764114399999997,
+      "input_quantize_s": 0.0018915019999999998,
+      "conv_tiling_s": 0.02083876700000009,
+      "fmap_pack_s": 0.009948763999999971,
+      "pl_configure_s": 0.0028084209999999915,
+      "kernel_cma_stage_s": 0.005247581999999987,
+      "cdma_kernel_h2bram_s": 0.004393068999999972,
+      "fmap_cma_stage_initial_s": 0.006001519000000025,
+      "cdma_fmap_initial_h2bram_s": 0.006231015999999978,
+      "fmap_cma_stage_refill_s": 0.004279418999999993,
+      "cdma_fmap_refill_h2bram_s": 0.004366751999999995,
+      "pl_run_wall_s": 0.1780444649999997,
+      "pl_compute_handshake_est_s": 0.16747161299999913,
+      "cdma_output_bram2host_s": 0.004561482000000006,
+      "output_cma_invalidate_view_s": 0.017915814000000058,
+      "output_reconstruct_s": 1.280520466000013,
+      "conv_total_s": 1.5582953879999977,
+      "maxpool_s": 0.3041853589999999,
+      "fire_concat_s": 0.001371632000000001,
+      "feature_dequant_s": 0.00040176800000000026,
+      "gap_s": 0.0004547609999999997
+    },
+    {
+      "slot": 13,
+      "source_frame": 390,
+      "decoded": true,
+      "decode_s": 1.591407096,
+      "spatial_s": 1.883177699,
+      "frame_total_s": 3.474584795,
+      "preprocess_s": 0.04721186399999999,
+      "input_quantize_s": 0.0019521459999999984,
+      "conv_tiling_s": 0.01837703399999996,
+      "fmap_pack_s": 0.009319321999999963,
+      "pl_configure_s": 0.0024675350000000207,
+      "kernel_cma_stage_s": 0.004854684000000026,
+      "cdma_kernel_h2bram_s": 0.003973622000000024,
+      "fmap_cma_stage_initial_s": 0.005682772999999974,
+      "cdma_fmap_initial_h2bram_s": 0.00618452999999998,
+      "fmap_cma_stage_refill_s": 0.0038144360000000044,
+      "cdma_fmap_refill_h2bram_s": 0.004282952999999999,
+      "pl_run_wall_s": 0.1766570740000004,
+      "pl_compute_handshake_est_s": 0.16677836499999987,
+      "cdma_output_bram2host_s": 0.004331321999999992,
+      "output_cma_invalidate_view_s": 0.015816748999999852,
+      "output_reconstruct_s": 1.2637548299999928,
+      "conv_total_s": 1.5311351509999866,
+      "maxpool_s": 0.2989176950000001,
+      "fire_concat_s": 0.0009917009999999941,
+      "feature_dequant_s": 0.00038396899999999963,
+      "gap_s": 0.00044490299999999997
+    },
+    {
+      "slot": 14,
+      "source_frame": 420,
+      "decoded": true,
+      "decode_s": 0.424939592,
+      "spatial_s": 1.890388758,
+      "frame_total_s": 2.31532835,
+      "preprocess_s": 0.04733592799999997,
+      "input_quantize_s": 0.001960451000000002,
+      "conv_tiling_s": 0.018440882000000047,
+      "fmap_pack_s": 0.009472888999999929,
+      "pl_configure_s": 0.0025301510000000013,
+      "kernel_cma_stage_s": 0.004780969999999982,
+      "cdma_kernel_h2bram_s": 0.004038843,
+      "fmap_cma_stage_initial_s": 0.005745048000000003,
+      "cdma_fmap_initial_h2bram_s": 0.00621721900000001,
+      "fmap_cma_stage_refill_s": 0.004011826000000024,
+      "cdma_fmap_refill_h2bram_s": 0.004286242999999995,
+      "pl_run_wall_s": 0.1770744990000006,
+      "pl_compute_handshake_est_s": 0.16695161899999977,
+      "cdma_output_bram2host_s": 0.004333976999999906,
+      "output_cma_invalidate_view_s": 0.01606690500000002,
+      "output_reconstruct_s": 1.269826645999995,
+      "conv_total_s": 1.5382699499999966,
+      "maxpool_s": 0.2988591079999994,
+      "fire_concat_s": 0.0009863720000000027,
+      "feature_dequant_s": 0.00038144000000000025,
+      "gap_s": 0.00044081299999999997
+    },
+    {
+      "slot": 15,
+      "source_frame": 450,
+      "decoded": true,
+      "decode_s": 0.737299082,
+      "spatial_s": 1.90432292,
+      "frame_total_s": 2.641622002,
+      "preprocess_s": 0.05617936599999995,
+      "input_quantize_s": 0.001936504999999998,
+      "conv_tiling_s": 0.01918263799999992,
+      "fmap_pack_s": 0.009563686999999987,
+      "pl_configure_s": 0.0025973530000000036,
+      "kernel_cma_stage_s": 0.005122330999999966,
+      "cdma_kernel_h2bram_s": 0.004313219999999993,
+      "fmap_cma_stage_initial_s": 0.0059411360000000135,
+      "cdma_fmap_initial_h2bram_s": 0.006278371999999963,
+      "fmap_cma_stage_refill_s": 0.0042040580000000105,
+      "cdma_fmap_refill_h2bram_s": 0.004327723999999963,
+      "pl_run_wall_s": 0.17745285600000038,
+      "pl_compute_handshake_est_s": 0.16707707299999974,
+      "cdma_output_bram2host_s": 0.004411058000000051,
+      "output_cma_invalidate_view_s": 0.017565229000000238,
+      "output_reconstruct_s": 1.2690712089999963,
+      "conv_total_s": 1.542680703000002,
+      "maxpool_s": 0.29903508000000034,
+      "fire_concat_s": 0.0011571249999999984,
+      "feature_dequant_s": 0.0004246839999999998,
+      "gap_s": 0.0004894270000000006
+    }
+  ]
+}

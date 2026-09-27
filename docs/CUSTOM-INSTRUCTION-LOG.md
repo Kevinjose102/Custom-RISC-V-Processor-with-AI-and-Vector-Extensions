@@ -28,7 +28,7 @@ processor, that it makes the workload faster.
 | PFMA on pointwise / depthwise / first conv | ✅ 1.5–1.7× / 1.56× / 1.98× |
 | PRELU6.S (packed ReLU6, 1 cycle) | ✅ built and verified, 3.98× on ReLU6 (section 14) |
 | Whole-model estimate | ✅ 31.9 B → 19.3 B cycles, ≈ 1.66× |
-| Regression after the PRELU6 decoder change | 🟡 FMADD test and `dw.c` still to be rerun |
+| Regression after the PRELU6 decoder change | ✅ FMADD test and `dw.c` both pass (`tohost = 1`) |
 | Complete network run on Shakti | ❌ |
 
 ---
@@ -588,10 +588,11 @@ selects, store, loop overhead). PRELU6 handles two values with one load, one
 **Effect on the whole model:** ReLU6 is only 2.2% of the time, so the total
 moves from ≈ 1.61× to ≈ 1.66× (Amdahl's law).
 
-### Still to do
+### Regression
 
-- Rerun the FMADD regression test and `bench/dw.c`, to confirm the decoder
-  change (the remap no longer checks bit 25) didn't break normal FMADD or PFMA.
+After the decoder change (the remap no longer checks bit 25), the official
+`rv64uf/fmadd.S` test and `bench/dw.c` (PFMA depthwise, bit-exact check) both
+pass with `tohost = 1`. Normal FMADD and PFMA are unaffected.
 
 ---
 
@@ -653,8 +654,7 @@ Other benchmark files follow the same build and run steps; replace
 
 ## 16. Next steps
 
-1. **Regression after PRELU6:** rerun the FMADD test and `bench/dw.c`.
-2. **Pipelined FPU** (the biggest remaining win, section 14b): let a new FMA start before the previous one finishes.
+1. **Pipelined FPU** (the biggest remaining win, section 14b): let a new FMA start before the previous one finishes.
    This would speed up every operation, and allows a "combinations"
    comparison: PFMA only vs pipelining only vs both.
 3. **Load/store optimization:** for example, a load that also advances the

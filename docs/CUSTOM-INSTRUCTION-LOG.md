@@ -26,8 +26,9 @@ processor, that it makes the workload faster.
 | FDOT2.S (packed dot product) | ✅ built and verified, 1.13× |
 | PFMA.S (2-lane parallel FMA, extra FMA unit) | ✅ built and verified |
 | PFMA on pointwise / depthwise / first conv | ✅ 1.5–1.7× / 1.56× / 1.98× |
-| Whole-model estimate | ✅ 31.9 B → 19.8 B cycles, ≈ 1.61× |
-| PRELU6.S (packed ReLU6) | 🟡 designed, not yet built (section 14) |
+| PRELU6.S (packed ReLU6, 1 cycle) | ✅ built and verified, 3.98× on ReLU6 (section 14) |
+| Whole-model estimate | ✅ 31.9 B → 19.3 B cycles, ≈ 1.66× |
+| Regression after the PRELU6 decoder change | 🟡 FMADD test and `dw.c` still to be rerun |
 | Complete network run on Shakti | ❌ |
 
 ---
@@ -508,16 +509,16 @@ Measured cycles per unit × operation counts from section 11:
 | Baseline Shakti | 31.9 B | 1.00× |
 | + PFMA on pointwise | 21.5 B | 1.48× |
 | + PFMA on depthwise (including the copy) | 20.5 B | 1.55× |
-| **+ PFMA on first conv** | **19.8 B** | **≈ 1.61×** |
+| + PFMA on first conv | 19.8 B | ≈ 1.61× |
+| **+ PRELU6 on ReLU6** | **19.3 B** | **≈ 1.66×** |
 
-Still not accelerated: ReLU6 (2.2%), GRU (0.4%), residual add and pooling
-(about 0.1%).
+Still not accelerated: GRU (0.4%), residual add and pooling (about 0.1%).
 
 ---
 
-## 14. PRELU6.S: second hardware instruction (in progress)
+## 14. PRELU6.S: second hardware instruction
 
-**Status: code changes prepared; not yet built or tested.**
+**Status: built and verified.** It is bit-identical to the C code and 3.98× faster on ReLU6.
 
 ### What it does
 
@@ -549,7 +550,7 @@ bits `[26:25]`:
 | `10` | PFMA.S | `0111` | `.insn r4 0x5B, 0, 2, fd, fs1, fs2, fs3` |
 | `01` | PRELU6.S | `0101` | `.insn r4 0x5B, 0, 1, fd, fs1, fs1, fs1` |
 
-### Planned code changes
+### Code changes (applied with two small Python scripts)
 
 `src/decoder.bsv`: the remap no longer checks bit 25 (any custom-2 word is
 remapped), and the `fn` line becomes:
@@ -573,13 +574,45 @@ else if(opcode == 4'b0101) begin            // PRELU6.S: packed clamp to [0,6], 
 end
 ```
 
+### Result (`bench/relu.c`, 2,048 values, `tohost = 1`)
+
+| | Cycles per value | Speedup |
+|---|---|---|
+| Baseline C ReLU6 (`v<0?0:v; v>6?6:v`) | 14.00 | 1.00× |
+| **PRELU6.S** | **3.52** | **3.98×** |
+
+The C version needs about 7 instructions per value (load, two compares, two
+selects, store, loop overhead). PRELU6 handles two values with one load, one
+1-cycle clamp and one store.
+
+**Effect on the whole model:** ReLU6 is only 2.2% of the time, so the total
+moves from ≈ 1.61× to ≈ 1.66× (Amdahl's law).
+
 ### Still to do
 
-1. Apply the edits and rebuild the processor.
-2. Run `bench/relu.c` (baseline C ReLU6 vs PRELU6 on 2,048 values, with a
-   bit-exact check).
-3. Rerun the FMADD regression test and `bench/dw.c`, to confirm the decoder
-   change didn't break normal FMADD or PFMA.
+- Rerun the FMADD regression test and `bench/dw.c`, to confirm the decoder
+  change (the remap no longer checks bit 25) didn't break normal FMADD or PFMA.
+
+---
+
+## 14b. Why the total is stuck near 1.6× (Amdahl's law)
+
+| Part | Cycles now | Share |
+|---|---|---|
+| Pointwise (with PFMA) | ~16.4 B | ~85% |
+| Depthwise (with PFMA) | ~1.8 B | ~9% |
+| First conv (with PFMA) | ~0.8 B | ~4% |
+| ReLU6, GRU, others | ~0.3 B | ~2% |
+
+Pointwise is still about 85% of the time. Each PFMA waits about 10 cycles for
+the FMA units, because the FPU accepts only one operation at a time, so the two
+units sit idle most of the time. Speeding up the smaller operations can't move
+the total much.
+
+**The next big lever is a pipelined FPU:** let a new FMA start every cycle while
+earlier ones finish. Combined with PFMA and several independent running totals
+in the loop, the rough projection is pointwise at about 2–3 cycles per MAC and
+the whole model at about 3–4×. This is an estimate, not a measurement.
 
 ---
 
@@ -620,8 +653,8 @@ Other benchmark files follow the same build and run steps; replace
 
 ## 16. Next steps
 
-1. **Finish PRELU6** (section 14): build, test, regression.
-2. **Pipelined FPU:** let a new FMA start before the previous one finishes.
+1. **Regression after PRELU6:** rerun the FMADD test and `bench/dw.c`.
+2. **Pipelined FPU** (the biggest remaining win, section 14b): let a new FMA start before the previous one finishes.
    This would speed up every operation, and allows a "combinations"
    comparison: PFMA only vs pipelining only vs both.
 3. **Load/store optimization:** for example, a load that also advances the

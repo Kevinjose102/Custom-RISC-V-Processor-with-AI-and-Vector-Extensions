@@ -318,11 +318,11 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Module 3: Hardware Integration (RTL)}
-  \begin{columns}[T]
-    \column{0.47\textwidth}
-    \small
-    \begin{enumerate}
+\begin{frame}{Module 3: Hardware Integration (RTL)}
+  \vfill
+  \centering
+  \begin{minipage}{0.82\textwidth}
+    \begin{enumerate}\setlength{\itemsep}{3mm}
       \item \textbf{Decoder remap}: rewrite custom-2 into an internal FMADD form,
             so the existing decode, scoreboard and writeback are reused unchanged.
       \item \textbf{Own FPU opcode} (\texttt{fn}): the R4 \texttt{f7} field holds
@@ -331,23 +331,8 @@
       \item \textbf{Second FMA unit} \texttt{spfma2} for PFMA lane 1.
       \item \textbf{PRELU6}: integer compares on IEEE bits, 1 cycle.
     \end{enumerate}
-    \column{0.51\textwidth}
-\begin{lstlisting}
-// decoder.bsv (fn_decode)
-if (inst_in[6:0] == 'b1011011)
-  inst = {inst_in[31:27], 2'b10,
-          inst_in[24:7], 7'b1000011};
-
-// fpu_hardfloat.bsv (rule start)
-if (opcode == 4'b0111) begin  // PFMA
-  spfma.request (0, r1[31:0],
-                 r2[31:0], r3[31:0],  f3);
-  spfma2.request(0, r1[63:32],
-                 r2[31:0], r3[63:32], f3);
-  rg_pfma <= True;
-end
-\end{lstlisting}
-  \end{columns}
+  \end{minipage}
+  \vfill
 \end{frame}
 
 \begin{frame}{Module 4: Verification \& Benchmarking}

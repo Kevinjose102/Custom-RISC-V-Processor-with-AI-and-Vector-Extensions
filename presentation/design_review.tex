@@ -336,10 +336,11 @@
 \end{frame}
 
 \begin{frame}{Module 4: Verification \& Benchmarking}
-  \begin{columns}[T]
-    \column{0.5\textwidth}
+  \vfill
+  \centering
+  \begin{minipage}{0.8\textwidth}
     \begin{block}{Verification}
-      \begin{itemize}\small
+      \begin{itemize}\setlength{\itemsep}{2mm}
         \item Directed test: FDOT2 of $[2,1.5]\cdot[4,3]+0.5 = 13.0$ \checkmark
         \item Every benchmark checks \textbf{bit-exact} equality with the
               baseline C code
@@ -347,20 +348,14 @@
         \item Pass/fail read from \texttt{tohost}; traces in \texttt{rtl.dump}
       \end{itemize}
     \end{block}
-    \column{0.46\textwidth}
-    \begin{block}{Bugs found \& fixed}
-      \begin{itemize}\small
-        \item Stale decoder build (illegal-instruction trap)
-        \item NaN-boxing turned packed inputs into NaN
-        \item Wrong source for the FPU \texttt{f7} field
-        \item BSC rule conflict: request and response in one rule
-      \end{itemize}
-    \end{block}
-  \end{columns}
-  \vspace{2mm}
-  \centering\small Benchmark flow: C kernel $\rightarrow$ RISC-V GCC $\rightarrow$
+  \end{minipage}
+  \vspace{5mm}
+
+  \textbf{Benchmark flow}\\[1mm]
+  \small C kernel $\rightarrow$ RISC-V GCC $\rightarrow$
   \texttt{elf2hex} $\rightarrow$ simulated Shakti $\rightarrow$
   \texttt{mcycle}/\texttt{minstret} $\rightarrow$ report
+  \vfill
 \end{frame}
 
 \begin{frame}{Measured Results (all bit-exact)}

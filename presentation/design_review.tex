@@ -146,16 +146,16 @@
           instructions: each MAC takes \textbf{11--18 cycles} on baseline Shakti.
     \item One MobileNetV2 + GRU inference (8 frames) takes
           \textbf{31.9 billion cycles} on baseline Shakti.
-    \item On the existing Kria KV260 prototype (ARM + FPGA accelerator),
-          \textbf{$\sim$82\% of the frame time} is the ARM CPU reshuffling data;
-          the accelerator itself uses only $\sim$9\%.
+    \item The standard ISA does \textbf{one MAC per instruction} (\texttt{fmadd.s});
+          RV64GC has no packed/SIMD floating-point support.
+    \item Simply adding a faster instruction is not enough: the real bottleneck
+          must be found by \textbf{profiling on the target core itself}.
   \end{itemize}
   \vspace{3mm}
   \begin{block}{Problem Statement}
     Design \textbf{workload-driven custom RISC-V instructions}, integrate them into
-    the Shakti C-Class core, and deploy the core with an FPGA accelerator to
-    speed up \textbf{edge video anomaly detection}, measured against an
-    unmodified baseline.
+    the Shakti C-Class core to speed up \textbf{edge video anomaly detection},
+    measured against the unmodified baseline core.
   \end{block}
 \end{frame}
 
@@ -172,9 +172,9 @@
           (official riscv-tests).
     \item \textbf{Measure} speedup using hardware counters
           (\texttt{mcycle}, \texttt{minstret}).
-    \item \textbf{Deploy} Shakti on the Kria KV260 FPGA in place of the ARM core,
-          driving the INT8 accelerator.
-    \item \textbf{Compare} edge (Shakti + accelerator) with server-based inference.
+    \item \textbf{Extend} the instruction set to INT8 models (TinyMetro-Net from Team 1).
+    \item \textbf{Run} the complete network on the customised core and
+          \textbf{compare} it with the baseline core and a PC/server.
   \end{enumerate}
 \end{frame}
 
@@ -190,7 +190,7 @@
         \item Standard RV64IMAFDC behaviour unchanged
         \item Per-kernel cycle and instruction measurement
         \item Run the CNN kernels (conv, depthwise, pointwise, ReLU) on the core
-        \item Interface with the FPGA accelerator over AXI4 \emph{(planned)}
+        \item Support INT8 models (TinyMetro-Net) \emph{(planned)}
       \end{itemize}
     \end{block}
     \column{0.49\textwidth}
@@ -211,32 +211,32 @@
 
 % ============================================================================
 \section{System Architecture}
-\begin{frame}{Overall System Architecture (Target Edge System)}
+\begin{frame}{Overall System Architecture}
   \centering
-  \begin{tikzpicture}[node distance=6mm and 6mm,scale=0.95,transform shape]
+  \begin{tikzpicture}[node distance=6mm and 5mm,scale=0.9,transform shape]
     \node[box] (cam) {Camera\\frames};
-    \node[box,right=of cam] (pre) {Preprocess\\resize, quantise};
-    \node[hot,right=9mm of pre,minimum width=32mm,minimum height=16mm] (cpu)
-         {\textbf{Shakti C-Class}\\+ custom ISA\\(PFMA, PRELU6, \dots)};
-    \node[box,below=8mm of cpu,minimum width=34mm,minimum height=12mm] (acc)
-         {INT8 Conv Accelerator\\128 MAC lanes, 100 MHz};
-    \node[box,below=5mm of acc] (mem) {DDR / BRAM: feature maps, weights};
-    \node[box,right=9mm of cpu] (cls) {Temporal model\\+ classifier};
-    \node[hot,below=10mm of cls] (out) {Anomaly\\alert};
+    \node[box,right=of cam] (pre) {Preprocess\\resize, normalise};
+    \node[hot,right=7mm of pre,minimum width=36mm,minimum height=16mm] (cpu)
+         {\textbf{Shakti C-Class core}\\RV64IMAFDC\\+ custom ISA};
+    \node[box,right=7mm of cpu] (cls) {Temporal model\\+ classifier};
+    \node[hot,below=9mm of cls] (out) {Anomaly\\alert};
+    \node[hot,below=6mm of cpu,minimum width=36mm] (fpu)
+         {Extended FPU\\PFMA, FDOT2, PRELU6};
+    \node[box,below=4mm of fpu,minimum width=36mm] (mem) {Caches + memory (weights, feature maps)};
     \draw[arr] (cam) -- (pre);
     \draw[arr] (pre) -- (cpu);
-    \draw[darr] (cpu) -- node[lbl]{AXI4 / AXI-Lite} (acc);
-    \draw[darr] (acc) -- node[lbl]{CDMA} (mem);
+    \draw[darr] (cpu) -- (fpu);
+    \draw[darr] (fpu) -- (mem);
     \draw[arr] (cpu) -- (cls);
     \draw[arr] (cls) -- (out);
     \begin{scope}[on background layer]
-      \node[draw=navy,dashed,rounded corners,fit=(cpu)(acc)(mem),inner sep=4mm,
-            label={[font=\scriptsize,navy]above left:Kria KV260 FPGA (programmable logic)}] {};
+      \node[draw=navy,dashed,rounded corners,fit=(cpu)(fpu)(mem),inner sep=3mm,
+            label={[font=\scriptsize,navy]above left:Shakti SoC (Verilator simulation; FPGA-ready soft core)}] {};
     \end{scope}
   \end{tikzpicture}
-  \par\vspace{1mm}
-  {\small Shakti replaces the ARM Cortex-A53 as the host that drives the accelerator
-  and runs the non-convolution work.}
+  \par\vspace{2mm}
+  {\small The CNN kernels (convolutions, activations) run on the core; the
+  custom instructions accelerate them inside the floating-point unit.}
 \end{frame}
 
 \begin{frame}{Architecture: Inside the Shakti C-Class Pipeline}
@@ -397,34 +397,9 @@ end
   \end{tabular}
 \end{frame}
 
-\begin{frame}{Module 5: FPGA Integration (Kria KV260)}
-  \begin{columns}[T]
-    \column{0.52\textwidth}
-    \small\textbf{Existing prototype (SqueezeNet + TCN, INT8)}
-    \begin{itemize}\small
-      \item ARM Cortex-A53 (PYNQ / Python) + FPGA conv accelerator
-      \item 128 INT8 MAC lanes at 100 MHz, AXI CDMA, three 1024-bit BRAMs
-      \item Validated bit-exact on the board: 0 mismatches in 788,544 outputs
-    \end{itemize}
-    \column{0.45\textwidth}
-    \small\textbf{Measured per frame on the board}\\[1mm]
-    \begin{tabular}{lr}\toprule
-      Output rebuild (ARM) & 1.29 s\\
-      Max-pool (ARM) & 0.31 s\\
-      \textbf{Accelerator conv} & \textbf{0.18 s}\\
-      DMA + staging & 0.04 s\\\midrule
-      Total per frame & 1.94 s\\\bottomrule
-    \end{tabular}
-  \end{columns}
-  \vspace{3mm}
-  \begin{block}{Plan}
-    Replace the ARM with the Shakti soft core on the FPGA, port the host driver to
-    bare-metal C, and target the CPU-side bottleneck (data reshuffling, pooling,
-    requantisation) with custom instructions.
-  \end{block}
-\end{frame}
 
-\begin{frame}{Module 6: Target Model: TinyMetro-Net (Team 1)}
+
+\begin{frame}{Module 5: Target Model: TinyMetro-Net (Team 1)}
   \begin{columns}[T]
     \column{0.5\textwidth}
     \begin{itemize}\small
@@ -506,9 +481,9 @@ end
              fl/.style={font=\scriptsize,above,midway}}
     \node[ext]  (cam) at (0,0)      {Camera\\(external)};
     \node[proc] (p1)  at (3.3,0)    {1. Preprocess\\\& quantise};
-    \node[proc,fill=accent!18,draw=accent] (p2) at (7.4,0) {2. Conv layers\\(custom ISA /\\accelerator)};
+    \node[proc,fill=accent!18,draw=accent] (p2) at (7.4,0) {2. Conv layers\\(custom ISA)};
     \node[proc] (p3)  at (11.5,0)   {3. Pool \&\\activation};
-    \node[proc] (p4)  at (11.5,-3.2) {4. Temporal model\\(GRU / TCN)};
+    \node[proc] (p4)  at (11.5,-3.2) {4. Temporal model\\(GRU)};
     \node[proc] (p5)  at (7.4,-3.2)  {5. Classifier\\+ softmax};
     \node[ext]  (op)  at (3.3,-3.2)  {Operator\\(external)};
     \node[draw=navy,thick,fill=white,minimum width=30mm,minimum height=6mm,font=\scriptsize]
@@ -558,8 +533,6 @@ end
     Workload & Data type & Data used\\\midrule
     MobileNetV2 + GRU & FP32 & ImageNet-pretrained MobileNetV2; 8-frame
       sequences of 224$\times$224; random inputs for timing\\
-    SqueezeNet 1.1 + TCN & INT8 & Kria package: \texttt{anomaly\_sample.mp4},
-      \texttt{normal\_sample.mp4}; 16 sampled frames\\
     TinyMetro-Net (Team 1) & INT8 & 8-class metro dataset: 224 test frames,
       527 validation frames, 54 held-out clips\\\bottomrule
   \end{tabular}
@@ -585,9 +558,10 @@ end
     \end{itemize}
     \column{0.49\textwidth}
     \begin{itemize}\small
-      \item \textbf{FPGA integration}: no Vivado project yet; fitting Shakti and
-            the accelerator on the K26 is unverified
-      \item \textbf{Software port}: the Python driver must become bare-metal C
+      \item \textbf{FPGA prototype}: resource usage of the modified core on an
+            FPGA is not yet measured
+      \item \textbf{Software port}: the full network must be written in
+            bare-metal C (no OS, no Python)
       \item \textbf{Data type}: target models are INT8, while our first
             instructions are FP32
       \item \textbf{Tooling}: stale builds, long rebuilds (15--20 min)
@@ -606,8 +580,7 @@ end
     PFMA.S (2nd FMA unit) & \textcolor{okgreen}{\checkmark} & 1.5--2.0$\times$ on conv kernels\\
     PRELU6.S & \textcolor{okgreen}{\checkmark} & 3.98$\times$ on ReLU6\\
     Regression (riscv-tests) & \textcolor{okgreen}{\checkmark} & all pass, bit-exact\\
-    Whole-model estimate & \textcolor{okgreen}{\checkmark} & 31.9 B $\rightarrow$ 19.3 B cycles (\textbf{1.66$\times$})\\
-    Kria prototype analysis & \textcolor{okgreen}{\checkmark} & bottleneck = ARM data handling\\\bottomrule
+    Whole-model estimate & \textcolor{okgreen}{\checkmark} & 31.9 B $\rightarrow$ 19.3 B cycles (\textbf{1.66$\times$})\\\bottomrule
   \end{tabular}
 \end{frame}
 
@@ -619,14 +592,14 @@ end
           fused requantise + ReLU
     \item \textbf{Complete network} running on the customised Shakti core,
           compared end to end with baseline Shakti
-    \item \textbf{Shakti + accelerator on the Kria KV260}, replacing the ARM core
-    \item \textbf{Edge vs server} comparison of latency and throughput
+    \item \textbf{FPGA prototype} of the customised soft core
+    \item \textbf{Edge vs PC/server} comparison of latency and throughput
   \end{enumerate}
   \vspace{2mm}
   \begin{block}{Comparison table (final report)}
     \centering\small
     Baseline Shakti \quad vs \quad Shakti + custom ISA \quad vs \quad
-    ARM + accelerator \quad vs \quad Shakti + accelerator \quad vs \quad Server
+    Shakti + custom ISA + pipelined FPU \quad vs \quad PC / server
   \end{block}
 \end{frame}
 
@@ -642,8 +615,8 @@ end
           behaviour unchanged.
     \item Estimated \textbf{1.66$\times$} speedup for MobileNetV2 + GRU; the
           remaining bottleneck (the non-pipelined FPU) is identified and quantified.
-    \item Next: INT8 instructions for Team 1's TinyMetro-Net, and deploying
-          Shakti with the FPGA accelerator on the Kria KV260.
+    \item Next: a pipelined FPU, INT8 instructions for Team 1's TinyMetro-Net,
+          and running the complete network on the customised core.
   \end{itemize}
 \end{frame}
 
@@ -660,18 +633,11 @@ end
           Bottlenecks,'' \emph{CVPR}, 2018.
     \item K. Cho \emph{et al.}, ``Learning Phrase Representations using RNN
           Encoder--Decoder for Statistical Machine Translation,'' \emph{EMNLP}, 2014.
-    \item F. Iandola \emph{et al.}, ``SqueezeNet: AlexNet-level accuracy with 50x
-          fewer parameters and $<$0.5MB model size,'' arXiv:1602.07360, 2016.
-    \item S. Bai, J. Z. Kolter, V. Koltun, ``An Empirical Evaluation of Generic
-          Convolutional and Recurrent Networks for Sequence Modeling,''
-          arXiv:1803.01271, 2018.
     \item J. Hauser, \emph{Berkeley HardFloat} floating-point hardware library.
     \item R. Nikhil, \emph{BSV by Example}, Bluespec Inc.
     \item W. Snyder, \emph{Verilator} open-source SystemVerilog simulator.
     \item J. Hennessy, D. Patterson, \emph{Computer Architecture: A Quantitative
           Approach}, 6th ed., Morgan Kaufmann, 2017.
-    \item AMD/Xilinx, \emph{Kria KV260 Vision AI Starter Kit User Guide} and
-          PYNQ documentation.
     \item Team 1, \emph{TinyMetro-Net: Architecture \& Hardware Specification},
           internal report, v1.0.
   \end{enumerate}

@@ -141,22 +141,14 @@
 % ============================================================================
 \section{Problem Definition}
 \begin{frame}{Problem Definition}
-  \begin{itemize}
-    \item General-purpose embedded cores execute CNN kernels with scalar
-          instructions: each MAC takes \textbf{11--18 cycles} on baseline Shakti.
-    \item One MobileNetV2 + GRU inference (8 frames) takes
-          \textbf{31.9 billion cycles} on baseline Shakti.
-    \item The standard ISA does \textbf{one MAC per instruction} (\texttt{fmadd.s});
-          RV64GC has no packed/SIMD floating-point support.
-    \item Simply adding a faster instruction is not enough: the real bottleneck
-          must be found by \textbf{profiling on the target core itself}.
-  \end{itemize}
-  \vspace{3mm}
+  \vfill
   \begin{block}{Problem Statement}
+    \large
     Design \textbf{workload-driven custom RISC-V instructions}, integrate them into
     the Shakti C-Class core to speed up \textbf{edge video anomaly detection},
     measured against the unmodified baseline core.
   \end{block}
+  \vfill
 \end{frame}
 
 % ============================================================================
@@ -221,7 +213,7 @@
     \node[box,right=7mm of cpu] (cls) {Temporal model\\+ classifier};
     \node[hot,below=9mm of cls] (out) {Anomaly\\alert};
     \node[hot,below=6mm of cpu,minimum width=36mm] (fpu)
-         {Extended FPU\\PFMA, FDOT2, PRELU6};
+         {\textbf{CUSTOM INSTRUCTIONS}\\(PFMA, FDOT2, PRELU6)};
     \node[box,below=4mm of fpu,minimum width=36mm] (mem) {Caches + memory (weights, feature maps)};
     \draw[arr] (cam) -- (pre);
     \draw[arr] (pre) -- (cpu);
@@ -298,23 +290,28 @@
 \end{frame}
 
 \begin{frame}{Module 2: Custom Instruction Design}
-  \small
-  \begin{tabular}{@{}llp{6.6cm}l@{}}\toprule
-    Instruction & fmt & Semantics & FPU op\\\midrule
-    \texttt{FDOT2.S} & 00 & $fd = a_1 b_1 + (a_0 b_0 + c)$, 2 FMAs \emph{in sequence} & \texttt{0110}\\
-    \texttt{PFMA.S}  & 10 & $fd = [\,x_1 w + c_1 \mid x_0 w + c_0\,]$, 2 FMAs \emph{in parallel} & \texttt{0111}\\
-    \texttt{PRELU6.S}& 01 & $fd = [\,\mathrm{clamp}_{0..6}(x_1) \mid \mathrm{clamp}_{0..6}(x_0)\,]$, 1 cycle & \texttt{0101}\\\bottomrule
+  \scriptsize
+  \begin{tabular}{@{}llp{7.6cm}l@{}}\toprule
+    Instruction & Type & What it does & Status\\\midrule
+    \texttt{FDOT2.S}  & FP32 & $fd = a_1 b_1 + (a_0 b_0 + c)$: 2-element dot product & \textcolor{okgreen}{\checkmark\ done}\\
+    \texttt{PFMA.S}   & FP32 & $fd = [\,x_1 w + c_1 \mid x_0 w + c_0\,]$: 2 FMAs in parallel & \textcolor{okgreen}{\checkmark\ done}\\
+    \texttt{PRELU6.S} & FP32 & clamp both packed values to $[0,6]$ in 1 cycle & \textcolor{okgreen}{\checkmark\ done}\\\midrule
+    \texttt{PFADD.S}  & FP32 & packed add of 2 values (residual / skip connections) & proposed\\
+    \texttt{PFMAX.S}  & FP32 & packed max of 2 values (max pooling) & proposed\\
+    \texttt{PSIGM / PTANH} & FP32 & fast sigmoid / tanh approximation (GRU gates) & proposed\\
+    \texttt{FLD.PI}   & memory & load + pointer post-increment (removes address updates) & proposed\\
+    \texttt{PDOT8}    & INT8 & 8 INT8 multiply-accumulates in one instruction & proposed\\
+    \texttt{PREQ}     & INT8 & requantise + ReLU: $\mathrm{clip}((acc\cdot s)\gg 15,\,0,\,127)$ & proposed\\
+    \texttt{PMAX8}    & INT8 & packed INT8 max (pooling) & proposed\\\bottomrule
   \end{tabular}
-  \vspace{3mm}
-  \begin{itemize}
-    \item All three use the \textbf{custom-2} opcode (\texttt{0x5B}) with the R4
-          layout; fmt bits [26:25] select the instruction.
-    \item Two FP32 values are \textbf{packed} into one 64-bit FP register
-          (FLEN = 64).
-    \item \textbf{Design path:} FDOT2 halved the instruction count but gave only
-          1.07--1.13$\times$. That revealed the real bottleneck: the FPU accepts
-          \textbf{one operation at a time} (about 10-cycle FMA latency).
-          $\Rightarrow$ PFMA adds a \textbf{second FMA unit} so two MACs overlap.
+  \vspace{2mm}
+  \begin{itemize}\small
+    \item \textbf{Encoding:} \textbf{custom-2} opcode (\texttt{0x5B}), R4 layout;
+          fmt bits [26:25] and funct3 leave room for all of these.
+    \item \textbf{Packing:} two FP32 values (or eight INT8 values) in one 64-bit register.
+    \item \textbf{Selection rule:} add an instruction only where the
+          \textbf{Shakti profile} shows the time goes (pointwise 84\%, depthwise 9\%,
+          first conv 5\%, ReLU6 2\%, GRU 0.4\%).
   \end{itemize}
 \end{frame}
 
@@ -378,7 +375,7 @@ end
   \texttt{mcycle}/\texttt{minstret} $\rightarrow$ report
 \end{frame}
 
-\begin{frame}{Module 4: Measured Results (all bit-exact)}
+\begin{frame}{Measured Results (all bit-exact)}
   \centering\small
   \begin{tabular}{lccc}\toprule
     Kernel & Baseline & Custom & Speedup\\\midrule
@@ -398,34 +395,6 @@ end
 \end{frame}
 
 
-
-\begin{frame}{Module 5: Target Model: TinyMetro-Net (Team 1)}
-  \begin{columns}[T]
-    \column{0.5\textwidth}
-    \begin{itemize}\small
-      \item 13 layers (12 conv + 1 linear), \textbf{48,600 INT8 parameters}
-            (47 KB)
-      \item Conv 3$\times$3 + 5 $\times$ (depthwise s2 + pointwise) + final
-            pointwise
-      \item Requantisation:
-            $\mathit{out} = \mathrm{clip}\big((\mathit{acc}\cdot s) \gg 15,\,0,\,127\big)$
-      \item 8 classes (violence, falls, crowd, wrong-way, trespass, luggage,
-            fire, normal)
-    \end{itemize}
-    \column{0.46\textwidth}
-    \small\textbf{Where the work is (our calculation)}\\[1mm]
-    \begin{tabular}{lrr}\toprule
-      Part & MACs & Share\\\midrule
-      \textbf{conv1} & \textbf{8.13 M} & \textbf{57\%}\\
-      Pointwise $\times$6 & 5.04 M & 35\%\\
-      Depthwise $\times$5 & 1.03 M & 7\%\\\midrule
-      Total & 14.2 M & \\\bottomrule
-    \end{tabular}
-  \end{columns}
-  \vspace{3mm}
-  \small\textbf{Next:} a Shakti profile of TinyMetro, then INT8 instructions:
-  a packed INT8 dot product (\texttt{PDOT8}) and a fused requantise + ReLU.
-\end{frame}
 
 % ============================================================================
 \section{Design Diagrams}
@@ -473,29 +442,31 @@ end
   \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Data Flow Diagram (Level 1): Anomaly Detection Pipeline}
+\begin{frame}{Data Flow Diagram (Level 1): Custom Instruction Flow}
   \centering
-  \begin{tikzpicture}[font=\small]
-    \tikzset{proc/.style={box,rounded rectangle,minimum width=20mm,font=\scriptsize},
-             ext/.style={box,fill=white,minimum width=20mm},
-             fl/.style={font=\scriptsize,above,midway}}
-    \node[ext]  (cam) at (0,0)      {Camera\\(external)};
-    \node[proc] (p1)  at (3.3,0)    {1. Preprocess\\\& quantise};
-    \node[proc,fill=accent!18,draw=accent] (p2) at (7.4,0) {2. Conv layers\\(custom ISA)};
-    \node[proc] (p3)  at (11.5,0)   {3. Pool \&\\activation};
-    \node[proc] (p4)  at (11.5,-3.2) {4. Temporal model\\(GRU)};
-    \node[proc] (p5)  at (7.4,-3.2)  {5. Classifier\\+ softmax};
-    \node[ext]  (op)  at (3.3,-3.2)  {Operator\\(external)};
-    \node[draw=navy,thick,fill=white,minimum width=30mm,minimum height=6mm,font=\scriptsize]
-          (ds) at (7.4,-1.6) {D1: Weights \& scales (NPZ)};
-    \draw[arr] (cam) -- node[fl]{frames} (p1);
-    \draw[arr] (p1) -- node[fl]{tensor} (p2);
-    \draw[arr] (p2) -- node[fl]{feature maps} (p3);
-    \draw[arr] (p3) -- node[fl,right,above=0pt,xshift=12mm]{features} (p4);
-    \draw[arr] (p4) -- node[fl]{sequence} (p5);
-    \draw[arr] (p5) -- node[fl]{class / alert} (op);
-    \draw[arr] (ds) -- (p2);
-    \draw[arr] (ds) -- (p5);
+  \begin{tikzpicture}[font=\small,scale=0.95,transform shape]
+    \tikzset{proc/.style={box,rounded rectangle,minimum width=24mm,font=\scriptsize},
+             ext/.style={box,fill=white,minimum width=22mm,font=\scriptsize},
+             fl/.style={font=\scriptsize,above,midway,align=center}}
+    \node[ext]  (m)  at (0,0)       {Trained model\\(Team 1 / PyTorch)};
+    \node[proc] (p1) at (4.0,0)     {1. Export weights\\\& biases (C arrays)};
+    \node[proc] (p2) at (8.1,0)     {2. Profile on\\baseline Shakti};
+    \node[proc,fill=accent!18,draw=accent] (p3) at (12.2,0) {3. Custom instruction\\(decoder + FPU RTL)};
+    \node[proc] (p4) at (12.2,-3.0) {4. Compile C kernel\\(GCC + \texttt{.insn})};
+    \node[proc,fill=accent!18,draw=accent] (p5) at (8.1,-3.0) {5. Run on modified\\Shakti};
+    \node[proc] (p6) at (4.0,-3.0)  {6. Compare with\\baseline};
+    \node[ext]  (r)  at (0,-3.0)    {Results\\(cycles, speedup)};
+    \node[draw=navy,thick,fill=white,minimum width=34mm,minimum height=6mm,font=\scriptsize]
+          (ds) at (6.05,-1.5) {D1: Weights \& biases (memory)};
+    \draw[arr] (m) -- node[fl]{weights,\\biases} (p1);
+    \draw[arr] (p1) -- node[fl]{weights +\\layer shapes} (p2);
+    \draw[arr] (p2) -- node[fl]{slowest\\kernel} (p3);
+    \draw[arr] (p3) -- node[right,font=\scriptsize]{new opcode} (p4);
+    \draw[arr] (p4) -- node[fl,below]{ELF\\(code + weights)} (p5);
+    \draw[arr] (p5) -- node[fl]{outputs,\\\texttt{mcycle}} (p6);
+    \draw[arr] (p6) -- node[fl]{report} (r);
+    \draw[arr,accent] (p1) -- (ds);
+    \draw[arr,accent] (ds.east) -| (p5.north);
   \end{tikzpicture}
 \end{frame}
 
@@ -505,23 +476,24 @@ end
     \tikzset{actor/.pic={\draw[thick,navy] (0,0.55) circle (0.15);
         \draw[thick,navy] (0,0.4) -- (0,0) (-0.25,0.25) -- (0.25,0.25)
                           (0,0) -- (-0.2,-0.35) (0,0) -- (0.2,-0.35);},
-             uc/.style={ellipse,draw=navy,thick,fill=soft,minimum width=38mm,
-                        minimum height=8mm,font=\scriptsize}}
-    \draw[navy,thick,rounded corners] (-2.6,-3.2) rectangle (2.6,2.4);
-    \node[font=\scriptsize\bfseries,navy] at (0,2.1) {Custom RISC-V Edge System};
-    \node[uc] (u1) at (0,1.5)  {Profile workload};
-    \node[uc] (u2) at (0,0.6)  {Add custom instruction};
-    \node[uc] (u3) at (0,-0.3) {Run benchmark / verify};
-    \node[uc] (u4) at (0,-1.2) {Deploy model on edge};
-    \node[uc] (u5) at (0,-2.2) {Detect anomaly \& alert};
-    \pic at (-4.6,0.3) {actor}; \node[font=\scriptsize] at (-4.6,-0.35) {Developer};
-    \pic at (4.6,-0.9) {actor}; \node[font=\scriptsize] at (4.6,-1.55) {Camera};
-    \pic at (4.6,-2.4) {actor}; \node[font=\scriptsize] at (4.6,-3.05) {Operator};
-    \pic at (-4.6,-2.2) {actor}; \node[font=\scriptsize] at (-4.6,-2.85) {Team 1 (model)};
-    \foreach \u in {u1,u2,u3,u4} \draw[navy] (-4.3,0.3) -- (\u.west);
-    \draw[navy] (-4.3,-2.2) -- (u4.west);
-    \draw[navy] (4.3,-0.9) -- (u5.east);
-    \draw[navy] (4.3,-2.4) -- (u5.east);
+             uc/.style={ellipse,draw=navy,thick,fill=soft,minimum width=50mm,
+                        minimum height=6.5mm,font=\scriptsize,inner sep=1pt},
+             inc/.style={->,dashed,navy,>=stealth}}
+    \draw[navy,thick,rounded corners] (-3.2,-3.45) rectangle (3.2,2.6);
+    \node[font=\scriptsize\bfseries,navy] at (0,2.3) {Custom RISC-V Shakti C-Class};
+    \node[uc] (u1) at (0,1.7)   {Capture metro camera frames};
+    \node[uc] (u2) at (0,0.82)  {Run model (weights \& parameters)};
+    \node[uc] (u3) at (0,-0.06) {Profile: find the most time-consuming part};
+    \node[uc,fill=accent!18,draw=accent] (u4) at (0,-0.94) {Add it as a custom instruction (RTL)};
+    \node[uc] (u5) at (0,-1.82) {Call it from C via the compiler (\texttt{.insn})};
+    \node[uc] (u6) at (0,-2.7)  {Run on Shakti \& measure speedup};
+    \foreach \a/\b in {u1/u2,u2/u3,u3/u4,u4/u5,u5/u6} \draw[inc] (\a) -- (\b);
+    \pic at (-5.2,1.5) {actor};  \node[font=\scriptsize] at (-5.2,0.85) {Metro camera};
+    \pic at (5.2,0.65) {actor};  \node[font=\scriptsize] at (5.2,0.0) {Team 1 (model)};
+    \pic at (-5.2,-1.5) {actor}; \node[font=\scriptsize] at (-5.2,-2.15) {Developer (us)};
+    \draw[navy] (-4.9,1.5) -- (u1.west);
+    \draw[navy] (4.9,0.65) -- (u2.east);
+    \foreach \u in {u3,u4,u5,u6} \draw[navy] (-4.9,-1.5) -- (\u.west);
   \end{tikzpicture}
 \end{frame}
 
@@ -571,7 +543,7 @@ end
 
 % ============================================================================
 \section{Expected Output}
-\begin{frame}{Expected Output: Achieved So Far}
+\begin{frame}{Expected Output}
   \centering
   \begin{tabular}{lcl}\toprule
     Deliverable & Status & Result\\\midrule
@@ -584,24 +556,6 @@ end
   \end{tabular}
 \end{frame}
 
-\begin{frame}{Expected Output: Final System}
-  \begin{enumerate}
-    \item \textbf{Pipelined FPU}: a new FMA every cycle (projected pointwise
-          $\sim$2--3 cyc/MAC, $\sim$3--4$\times$ overall; to be measured)
-    \item \textbf{INT8 instructions} for TinyMetro-Net: packed dot product,
-          fused requantise + ReLU
-    \item \textbf{Complete network} running on the customised Shakti core,
-          compared end to end with baseline Shakti
-    \item \textbf{FPGA prototype} of the customised soft core
-    \item \textbf{Edge vs PC/server} comparison of latency and throughput
-  \end{enumerate}
-  \vspace{2mm}
-  \begin{block}{Comparison table (final report)}
-    \centering\small
-    Baseline Shakti \quad vs \quad Shakti + custom ISA \quad vs \quad
-    Shakti + custom ISA + pipelined FPU \quad vs \quad PC / server
-  \end{block}
-\end{frame}
 
 % ============================================================================
 \section{Conclusion}
@@ -645,8 +599,7 @@ end
 
 \begin{frame}
   \centering
-  \Huge\textcolor{navy}{Thank You}\\[4mm]
-  \large Questions?
+  \Huge\textcolor{navy}{Thank You}
 \end{frame}
 
 \end{document}

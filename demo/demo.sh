@@ -71,6 +71,12 @@ if any(v is None for v in vals) or not vals or not vals[0]:
 pairs = (kernel == 'bench' and len(vals) % 2 == 0)
 runs = [(vals[i], vals[i + 1]) for i in range(0, len(vals), 2)] if pairs \
        else [(v, None) for v in vals]
+# A trailing value smaller than every cycle count is the work count
+# (elements for relu, MACs for the conv kernels), not another run.
+count = None
+if not pairs and len(runs) >= 3 and runs[-1][0] < min(r[0] for r in runs[:-1]):
+    count = runs.pop()[0]
+unit = 'elem' if kernel == 'relu' else 'MAC'
 names = ['Normal RISC-V code'] + ['With custom instruction'] * (len(runs) - 1)
 if len(runs) == 3:
     names[1:] = ['Custom (kernel only)', 'Custom (incl. data copy)']
@@ -79,10 +85,13 @@ print(f"  {'Version':28s} {'Cycles':>12s} {'Instructions':>14s} {'Speedup':>9s}"
 print("  " + "-" * 66)
 for n, (c, i) in zip(names, runs):
     ins = f"{i:14,d}" if i is not None else f"{'-':>14s}"
-    print(f"  {n:28s} {c:12,d} {ins} {base_c / c:8.2f}x")
+    per = f"   ({c / count:.2f} cyc/{unit})" if count else ""
+    print(f"  {n:28s} {c:12,d} {ins} {base_c / c:8.2f}x{per}")
 
 tohost = stores.get(0x80001000)
 ok = tohost == 1
+if count:
+    print(f"\n  Work done in each version: {count:,} {unit}s".replace("elems", "elements"))
 print(f"\n  Outputs identical (bit-exact): {'YES' if ok else 'NO'}   "
       f"tohost = {tohost} -> {'PASS' if ok else 'FAIL'}\n")
 EOF

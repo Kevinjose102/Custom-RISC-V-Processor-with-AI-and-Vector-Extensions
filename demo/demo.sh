@@ -27,7 +27,16 @@ echo "    custom-2 (0x5B) instructions in the program: $N"
 echo "=== [2/3] Running on the modified Shakti C-Class (Verilator) ==="
 cd bin
 START=$(date +%s)
-timeout 900 ./out +rtldump > /dev/null 2>&1
+rm -f rtl.dump
+./out +rtldump > /dev/null 2>&1 &
+PID=$!
+# The simulator keeps running after the program ends, so stop it as soon as
+# the program writes its pass/fail code to tohost (0x80001000).
+for i in $(seq 1 900); do
+  sleep 1
+  grep -qE "mem 0x0*80001000 +0x" rtl.dump 2>/dev/null && break
+done
+sleep 1; kill $PID 2>/dev/null; wait $PID 2>/dev/null
 echo "    simulation took $(( $(date +%s) - START )) s"
 
 echo "=== [3/3] Results (read from the chip's mcycle / minstret counters) ==="
@@ -53,20 +62,24 @@ if addr is None:
     sys.exit("results[] not found in bench.elf")
 
 vals = [stores.get(addr + 8 * i) for i in range(size // 8)]
-runs = [(vals[i], vals[i + 1]) for i in range(0, len(vals) - 1, 2)
-        if vals[i] is not None and vals[i + 1] is not None and vals[i] > 0]
-if not runs:
-    sys.exit("no results found in rtl.dump (did the run finish?)")
+print(f"\n  Kernel: {kernel}    raw results[] = {vals}")
+if any(v is None for v in vals) or not vals or not vals[0]:
+    sys.exit("  some results missing in rtl.dump (did the run finish?)")
 
+# relu/dw/conv0 store cycles only: [baseline, custom, ...]
+# bench stores pairs: [base cycles, base instr, custom cycles, custom instr]
+pairs = (kernel == 'bench' and len(vals) % 2 == 0)
+runs = [(vals[i], vals[i + 1]) for i in range(0, len(vals), 2)] if pairs \
+       else [(v, None) for v in vals]
 names = ['Normal RISC-V code'] + ['With custom instruction'] * (len(runs) - 1)
 if len(runs) == 3:
     names[1:] = ['Custom (kernel only)', 'Custom (incl. data copy)']
-base_c, base_i = runs[0]
-print(f"\n  Kernel: {kernel}")
+base_c = runs[0][0]
 print(f"  {'Version':28s} {'Cycles':>12s} {'Instructions':>14s} {'Speedup':>9s}")
 print("  " + "-" * 66)
 for n, (c, i) in zip(names, runs):
-    print(f"  {n:28s} {c:12,d} {i:14,d} {base_c / c:8.2f}x")
+    ins = f"{i:14,d}" if i is not None else f"{'-':>14s}"
+    print(f"  {n:28s} {c:12,d} {ins} {base_c / c:8.2f}x")
 
 tohost = stores.get(0x80001000)
 ok = tohost == 1

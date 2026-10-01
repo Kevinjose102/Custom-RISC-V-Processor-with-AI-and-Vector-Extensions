@@ -1,154 +1,181 @@
 \chapter{Software Requirements Specification}
+	The Software Requirements Specification (SRS) describes the requirements of
+	the proposed system and defines how the system is expected to function. It
+	specifies the system's main features, interfaces, inputs, outputs, and other
+	requirements needed for developing and evaluating the proposed
+	Custom RISC-V Instruction Extensions for Edge Video Anomaly Detection on the
+	Shakti C-Class processor.
 
-The Software Requirements Specification (SRS) describes the requirements of
-the proposed system and defines how the system is expected to function. It
-specifies the system's main features, interfaces, inputs, outputs, and other
-requirements needed for developing and evaluating the proposed
-Custom RISC-V Instruction Extensions for Edge Video Anomaly Detection on the
-Shakti C-Class processor.
+	\section{Introduction}
+	\paragraph\ 
+	Edge video anomaly detection systems run deep learning models such as
+	MobileNetV2 with a GRU on small embedded processors placed close to the
+	camera. These processors execute the convolution and activation operations of
+	the model using general-purpose scalar instructions, where each
+	multiply-accumulate (MAC) operation is performed separately. On the baseline
+	Shakti C-Class core, one MAC takes 11 to 18 clock cycles, and a single
+	inference over eight video frames requires about 31.9 billion cycles. This
+	makes real-time processing on a low-cost edge processor difficult.
 
-\section{Introduction}
+	\paragraph\ 
+	The proposed project addresses this problem by designing workload-driven
+	custom RISC-V instructions and integrating them into the open-source Shakti
+	C-Class core. Instead of adding instructions based on assumptions, the target
+	workload is first profiled on the processor itself to identify the operations
+	that consume the most execution time. Custom instructions are then designed
+	for these operations, implemented in the processor hardware, and called from C
+	programs through the RISC-V compiler. The current design includes three
+	instructions: FDOT2.S (packed dot product), PFMA.S (two-lane packed fused
+	multiply-add) and PRELU6.S (packed ReLU6 activation). Each instruction is
+	verified to produce results identical to standard RISC-V code, and its
+	performance is measured against the unmodified baseline core using the
+	processor's hardware cycle counters. This chapter provides the requirements
+	and functional structure needed to implement, test and evaluate the proposed
+	system.
 
-Edge video anomaly detection systems run deep learning models such as
-MobileNetV2 with a GRU on small embedded processors placed close to the
-camera. These processors execute the convolution and activation operations of
-the model using general-purpose scalar instructions, where each
-multiply-accumulate (MAC) operation is performed separately. On the baseline
-Shakti C-Class core, one MAC takes 11 to 18 clock cycles, and a single
-inference over eight video frames requires about 31.9 billion cycles. This
-makes real-time processing on a low-cost edge processor difficult.
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=14.0cm]{srs_system_overview.png}
+		\caption{Overview of the proposed workload-driven custom instruction flow}
+		\label{fig:srs_overview}
+	\end{figure}
 
-The proposed project addresses this problem by designing workload-driven
-custom RISC-V instructions and integrating them into the open-source Shakti
-C-Class core. Instead of adding instructions based on assumptions, the target
-workload is first profiled on the processor itself to identify the operations
-that consume the most execution time. Custom instructions are then designed
-for these operations, implemented in the processor hardware, and called from C
-programs through the RISC-V compiler. The current design includes three
-instructions: FDOT2.S (packed dot product), PFMA.S (two-lane packed fused
-multiply-add) and PRELU6.S (packed ReLU6 activation). Each instruction is
-verified to produce results identical to standard RISC-V code, and its
-performance is measured against the unmodified baseline core using the
-processor's hardware cycle counters. This chapter provides the requirements
-and functional structure needed to implement, test and evaluate the proposed
-system.
+	\section{Overall Description}
+	\paragraph\ 
+	The proposed system is a modified Shakti C-Class processor that executes deep
+	learning workloads for edge video anomaly detection faster than the original
+	core, using custom instructions designed from the measured behaviour of the
+	workload. The Shakti C-Class is a 64-bit, six-stage, in-order RISC-V core
+	implementing the RV64IMAFDC instruction set, written in Bluespec
+	SystemVerilog and simulated cycle by cycle using Verilator.
 
-\section{Overall Description}
+	\paragraph\ 
+	The development process begins with the target model and its layer
+	parameters. Each operation of the model, such as pointwise convolution,
+	depthwise convolution, the first convolution layer, the ReLU6 activation and
+	the GRU, is written as a bare-metal C kernel and executed on the baseline
+	processor. The workload profiling stage measures the cycles spent on each
+	operation and identifies the dominant kernels. Based on this profile, the
+	instruction design stage defines new instructions in the RISC-V custom-2
+	opcode space, packing two 32-bit floating-point values into one 64-bit
+	register so that a single instruction performs more useful work.
 
-The proposed system is a modified Shakti C-Class processor that executes deep
-learning workloads for edge video anomaly detection faster than the original
-core, using custom instructions designed from the measured behaviour of the
-workload. The Shakti C-Class is a 64-bit, six-stage, in-order RISC-V core
-implementing the RV64IMAFDC instruction set, written in Bluespec
-SystemVerilog and simulated cycle by cycle using Verilator.
+	\paragraph\ 
+	The hardware integration stage adds these instructions to the processor. The
+	decoder recognises the custom opcode and maps it onto the existing
+	floating-point path, and the floating-point unit is extended with a second
+	fused multiply-add unit and the logic required for the new operations. The
+	software stage calls the instructions from C code using the assembler
+	directive \texttt{.insn}. Finally, the verification and benchmarking stage
+	runs each kernel with standard code and with the custom instruction on the
+	simulated processor, checks that both outputs are bit-identical, reads the
+	cycle and instruction counts, and reports the speedup.
 
-The development process begins with the target model and its layer
-parameters. Each operation of the model, such as pointwise convolution,
-depthwise convolution, the first convolution layer, the ReLU6 activation and
-the GRU, is written as a bare-metal C kernel and executed on the baseline
-processor. The workload profiling stage measures the cycles spent on each
-operation and identifies the dominant kernels. Based on this profile, the
-instruction design stage defines new instructions in the RISC-V custom-2
-opcode space, packing two 32-bit floating-point values into one 64-bit
-register so that a single instruction performs more useful work.
+	\paragraph\ 
+	The overall design is modular. Each custom instruction is selected by its own
+	encoding and internal operation code, so instructions can be added, modified
+	or removed without changing the rest of the processor pipeline. The same
+	method can be applied to other models, such as the INT8 TinyMetro-Net model.
 
-The hardware integration stage adds these instructions to the processor. The
-decoder recognises the custom opcode and maps it onto the existing
-floating-point path, and the floating-point unit is extended with a second
-fused multiply-add unit and the logic required for the new operations. The
-software stage calls the instructions from C code using the assembler
-directive \texttt{.insn}. Finally, the verification and benchmarking stage
-runs each kernel with standard code and with the custom instruction on the
-simulated processor, checks that both outputs are bit-identical, reads the
-cycle and instruction counts, and reports the speedup.
+	Figure~\ref{fig:srs_overview} shows the complete flow of the system.
 
-The overall design is modular. Each custom instruction is selected by its own
-encoding and internal operation code, so instructions can be added, modified
-or removed without changing the rest of the processor pipeline. The same
-method can be applied to other models, such as the INT8 TinyMetro-Net model.
+	\section{External Interface Requirements}
+	\paragraph\ 
+	The external interface of the proposed system defines how the user provides
+	the required inputs and receives the results. The user interacts with the
+	system through a command-line environment on a Linux system (Ubuntu under
+	WSL). The user provides the C benchmark program for the kernel to be
+	evaluated, and the system compiles it with the RISC-V GCC toolchain, converts
+	it into a memory image using \texttt{elf2hex}, and loads it into the
+	simulated processor. A single command can be used to build, run and report
+	the results of a selected benchmark.
 
-\section{External Interface Requirements}
+	\paragraph\ 
+	The hardware interface is the Shakti C-Class processor model generated from
+	the Bluespec source code. The Bluespec compiler converts the modified source
+	into Verilog, and Verilator builds a cycle-accurate simulator from it. The
+	software interface between programs and the new hardware is the RISC-V
+	instruction set itself: the custom instructions use the reserved custom-2
+	opcode (\texttt{0x5B}) with the R4 instruction layout and are emitted from C
+	code through the \texttt{.insn} directive, so no change to the compiler is
+	required.
 
-The external interface of the proposed system defines how the user provides
-the required inputs and receives the results. The user interacts with the
-system through a command-line environment on a Linux system (Ubuntu under
-WSL). The user provides the C benchmark program for the kernel to be
-evaluated, and the system compiles it with the RISC-V GCC toolchain, converts
-it into a memory image using \texttt{elf2hex}, and loads it into the
-simulated processor. A single command can be used to build, run and report
-the results of a selected benchmark.
+	\paragraph\ 
+	During execution, the simulated processor writes an instruction trace
+	(\texttt{rtl.dump}), records the cycle and instruction counts using the
+	\texttt{mcycle} and \texttt{minstret} hardware counters, and reports pass or
+	fail through the \texttt{tohost} memory location. The system presents the
+	final result to the user as the number of cycles taken by the baseline and
+	custom versions, the resulting speedup, and whether the outputs of both
+	versions are identical. The system uses only locally stored source files,
+	benchmark programs, configuration files and result files. No network
+	connection is required for building, simulating or evaluating the processor.
 
-The hardware interface is the Shakti C-Class processor model generated from
-the Bluespec source code. The Bluespec compiler converts the modified source
-into Verilog, and Verilator builds a cycle-accurate simulator from it. The
-software interface between programs and the new hardware is the RISC-V
-instruction set itself: the custom instructions use the reserved custom-2
-opcode (\texttt{0x5B}) with the R4 instruction layout and are emitted from C
-code through the \texttt{.insn} directive, so no change to the compiler is
-required.
+	\paragraph\ 
+	The results reported to the user are computed from the hardware counter values as follows, where $C$ is the number of clock cycles measured with \texttt{mcycle}, $N$ is the number of operations (MACs or elements) processed, $c_i$ is the measured cycles per operation of kernel $i$ and $n_i$ is the number of times that operation runs in one inference:
 
-During execution, the simulated processor writes an instruction trace
-(\texttt{rtl.dump}), records the cycle and instruction counts using the
-\texttt{mcycle} and \texttt{minstret} hardware counters, and reports pass or
-fail through the \texttt{tohost} memory location. The system presents the
-final result to the user as the number of cycles taken by the baseline and
-custom versions, the resulting speedup, and whether the outputs of both
-versions are identical. The system uses only locally stored source files,
-benchmark programs, configuration files and result files. No network
-connection is required for building, simulating or evaluating the processor.
+	\begin{eqnarray}
+		\mathrm{Cycles\ per\ operation} & = & \frac{C}{N} \\
+		\mathrm{Speedup} & = & \frac{C_{\mathrm{baseline}}}{C_{\mathrm{custom}}} \\
+		C_{\mathrm{inference}} & = & \sum_{i} c_i \, n_i
+	\end{eqnarray}
 
-\section{System Features}
+	\section{System Features}
+	\paragraph\ 
+	The proposed system consists of several features that work together to
+	accelerate the target workload. The process begins with workload profiling,
+	where every operation of the MobileNetV2 + GRU model is executed on the
+	baseline processor with its real layer dimensions and timed using the
+	hardware cycle counter. The measured cost of each operation is combined with
+	the number of times it runs in one inference to identify the operations that
+	dominate the execution time.
 
-The proposed system consists of several features that work together to
-accelerate the target workload. The process begins with workload profiling,
-where every operation of the MobileNetV2 + GRU model is executed on the
-baseline processor with its real layer dimensions and timed using the
-hardware cycle counter. The measured cost of each operation is combined with
-the number of times it runs in one inference to identify the operations that
-dominate the execution time.
+	\paragraph\ 
+	The identified operations are then addressed through custom instruction
+	design. FDOT2.S computes a two-element dot product, PFMA.S performs two fused
+	multiply-add operations in parallel on two packed values, and PRELU6.S applies
+	the ReLU6 activation to two packed values in a single cycle. These
+	instructions are integrated into the processor through decoder changes that
+	map the custom opcode onto the existing floating-point path, and through
+	floating-point unit changes that add a second fused multiply-add unit, the
+	two-step dot product logic, result packing and the ReLU6 logic.
 
-The identified operations are then addressed through custom instruction
-design. FDOT2.S computes a two-element dot product, PFMA.S performs two fused
-multiply-add operations in parallel on two packed values, and PRELU6.S applies
-the ReLU6 activation to two packed values in a single cycle. These
-instructions are integrated into the processor through decoder changes that
-map the custom opcode onto the existing floating-point path, and through
-floating-point unit changes that add a second fused multiply-add unit, the
-two-step dot product logic, result packing and the ReLU6 logic.
+	\paragraph\ 
+	The instructions are used by C kernels for pointwise convolution, depthwise
+	convolution, the first convolution layer and ReLU6. The verification feature
+	runs each kernel in both standard and custom forms, compares all outputs bit
+	for bit, and runs the official RISC-V \texttt{fmadd} test to confirm that
+	standard instructions still behave correctly. Finally, the benchmarking
+	feature reports the cycles per operation and the speedup of each kernel, and
+	estimates the execution time of a complete inference on the modified
+	processor compared with the baseline.
 
-The instructions are used by C kernels for pointwise convolution, depthwise
-convolution, the first convolution layer and ReLU6. The verification feature
-runs each kernel in both standard and custom forms, compares all outputs bit
-for bit, and runs the official RISC-V \texttt{fmadd} test to confirm that
-standard instructions still behave correctly. Finally, the benchmarking
-feature reports the cycles per operation and the speedup of each kernel, and
-estimates the execution time of a complete inference on the modified
-processor compared with the baseline.
+	\section{Other Nonfunctional Requirements}
+	\paragraph\ 
+	The proposed system should produce results that are bit-identical to standard
+	RISC-V code for the same inputs, and the measured cycle counts should be
+	repeatable when the same program and processor build are used. The custom
+	instructions should provide a measurable improvement, with a target of at
+	least $1.5\times$ speedup on the dominant convolution kernels, while keeping
+	the hardware additions small. The existing RV64IMAFDC instructions must
+	continue to function correctly after every change, which is confirmed using
+	the official riscv-tests.
 
-\section{Other Non-Functional Requirements}
+	\paragraph\ 
+	The system should be easy to reproduce, using only open-source tools: the
+	Bluespec compiler, Verilator and the RISC-V GCC toolchain. Building,
+	running and evaluating a benchmark should be possible through simple
+	commands, and the results should clearly show the baseline cycles, the custom
+	cycles, the speedup and the pass or fail status. The design should also
+	respect the constraints of an edge processor, including its limited memory
+	such as the 16\,KB data cache.
 
-The proposed system should produce results that are bit-identical to standard
-RISC-V code for the same inputs, and the measured cycle counts should be
-repeatable when the same program and processor build are used. The custom
-instructions should provide a measurable improvement, with a target of at
-least $1.5\times$ speedup on the dominant convolution kernels, while keeping
-the hardware additions small. The existing RV64IMAFDC instructions must
-continue to function correctly after every change, which is confirmed using
-the official riscv-tests.
-
-The system should be easy to reproduce, using only open-source tools: the
-Bluespec compiler, Verilator and the RISC-V GCC toolchain. Building,
-running and evaluating a benchmark should be possible through simple
-commands, and the results should clearly show the baseline cycles, the custom
-cycles, the speedup and the pass or fail status. The design should also
-respect the constraints of an edge processor, including its limited memory
-such as the 16\,KB data cache.
-
-The design should be modular and maintainable, with each custom instruction
-implemented as a separate, clearly identified part of the decoder and
-floating-point unit, and with the design decisions documented. This allows
-individual instructions to be tested, modified or replaced without affecting
-the rest of the processor. The system should also be extensible, so that
-additional instructions, such as INT8 instructions for the TinyMetro-Net
-model or a pipelined floating-point unit, can be added in the future while the
-existing instructions continue to work.
+	\paragraph\ 
+	The design should be modular and maintainable, with each custom instruction
+	implemented as a separate, clearly identified part of the decoder and
+	floating-point unit, and with the design decisions documented. This allows
+	individual instructions to be tested, modified or replaced without affecting
+	the rest of the processor. The system should also be extensible, so that
+	additional instructions, such as INT8 instructions for the TinyMetro-Net
+	model or a pipelined floating-point unit, can be added in the future while the
+	existing instructions continue to work.

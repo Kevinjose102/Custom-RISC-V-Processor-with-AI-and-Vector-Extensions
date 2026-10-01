@@ -298,19 +298,19 @@
     Instruction & Type & What it does & Status\\\midrule
     \texttt{FDOT2.S}  & FP32 & $fd = a_1 b_1 + (a_0 b_0 + c)$: 2-element dot product & \textcolor{okgreen}{\checkmark\ done}\\
     \texttt{PFMA.S}   & FP32 & $fd = [\,x_1 w + c_1 \mid x_0 w + c_0\,]$: 2 FMAs in parallel & \textcolor{okgreen}{\checkmark\ done}\\
-    \texttt{PRELU6.S} & FP32 & clamp both packed values to $[0,6]$ in 1 cycle & \textcolor{okgreen}{\checkmark\ done}\\\midrule
+    \texttt{PRELU6.S} & FP32 & clamp both packed values to $[0,6]$ in 1 cycle & \textcolor{okgreen}{\checkmark\ done}\\
+    \texttt{PDOT8}    & INT8 & 8 INT8 multiply-accumulates in one instruction (custom-1) & \textcolor{okgreen}{\checkmark\ tested}\\\midrule
     \texttt{PFADD.S}  & FP32 & packed add of 2 values (residual / skip connections) & proposed\\
     \texttt{PFMAX.S}  & FP32 & packed max of 2 values (max pooling) & proposed\\
     \texttt{PSIGM / PTANH} & FP32 & fast sigmoid / tanh approximation (GRU gates) & proposed\\
     \texttt{FLD.PI}   & memory & load + pointer post-increment (removes address updates) & proposed\\
-    \texttt{PDOT8}    & INT8 & 8 INT8 multiply-accumulates in one instruction & proposed\\
     \texttt{PREQ}     & INT8 & requantise + ReLU: $\mathrm{clip}((acc\cdot s)\gg 15,\,0,\,127)$ & proposed\\
     \texttt{PMAX8}    & INT8 & packed INT8 max (pooling) & proposed\\\bottomrule
   \end{tabular}
   \vspace{2mm}
   \begin{itemize}\small
-    \item \textbf{Encoding:} \textbf{custom-2} opcode (\texttt{0x5B}), R4 layout;
-          fmt bits [26:25] and funct3 leave room for all of these.
+    \item \textbf{Encoding:} FP32 instructions use \textbf{custom-2} (\texttt{0x5B}, R4 layout, fmt bits [26:25]);
+          INT8 instructions use \textbf{custom-1} (\texttt{0x2B}, funct3) in the integer ALU.
     \item \textbf{Packing:} two FP32 values (or eight INT8 values) in one 64-bit register.
     \item \textbf{Selection rule:} add an instruction only where the
           \textbf{Shakti profile} shows the time goes (pointwise 84\%, depthwise 9\%,
@@ -547,7 +547,7 @@
     \item A \textbf{workload-driven} method (profile $\rightarrow$ bottleneck
           $\rightarrow$ instruction $\rightarrow$ verify $\rightarrow$ measure)
           produced real, measured gains on an open RISC-V core.
-    \item Three custom instructions (FDOT2, PFMA, PRELU6) were designed, built
+    \item Four custom instructions (FDOT2, PFMA, PRELU6, PDOT8) were designed, built
           into Shakti C-Class and verified \textbf{bit-exact}, with standard ISA
           behaviour unchanged.
     \item Estimated \textbf{1.66$\times$} speedup for MobileNetV2 + GRU; the

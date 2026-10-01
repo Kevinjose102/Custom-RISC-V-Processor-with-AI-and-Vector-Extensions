@@ -240,7 +240,8 @@ Test & What it checks & Result\\\midrule
 FDOT2 directed test & $[2, 1.5]\cdot[4, 3] + 0.5 = 13.0$ & Pass (\texttt{0x41500000})\\
 \texttt{rv64uf/fmadd.S} (riscv-tests) & Standard FMADD unaffected after each change & Pass\\
 Pointwise, depthwise, first conv benchmarks & PFMA outputs bit-identical to baseline & Pass\\
-ReLU6 benchmark & PRELU6 outputs bit-identical to baseline & Pass\\\bottomrule
+ReLU6 benchmark & PRELU6 outputs bit-identical to baseline & Pass\\
+PDOT8 directed test & $8 \times (1 \times 2) = 16$ & Pass (\texttt{0x10})\\\bottomrule
 \end{tabular}
 \caption{Verification summary (pass = \texttt{tohost} = 1).}
 \end{table}
@@ -264,6 +265,11 @@ ReLU6 benchmark & PRELU6 outputs bit-identical to baseline & Pass\\\bottomrule
   {Instruction trace (\texttt{rtl.dump}) showing the FDOT2 result 13.0
    (\texttt{0x41500000}) written to the destination register.}
   {\texttt{grep 41500000 bin/rtl.dump}}
+
+\screenshot{screenshots/pdot8_trace.png}
+  {Instruction trace showing the INT8 PDOT8 instruction (\texttt{0x002091ab})
+   writing the correct dot product 16 (\texttt{0x10}) to register x3.}
+  {\texttt{grep 002091ab bin/rtl.dump}}
 
 \screenshot{screenshots/fmadd_regression.png}
   {Official \texttt{rv64uf/fmadd.S} test passing on the modified core

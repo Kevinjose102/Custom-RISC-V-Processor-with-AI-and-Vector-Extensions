@@ -5,8 +5,9 @@
 
 This chapter describes the work completed for the 30\% review: the
 development environment, profiling of the target workload on the Shakti
-C-Class core, the design and RTL implementation of three custom
-instructions (\texttt{FDOT2.S}, \texttt{PFMA.S} and \texttt{PRELU6.S}), the
+C-Class core, the design and RTL implementation of three floating-point
+custom instructions (\texttt{FDOT2.S}, \texttt{PFMA.S} and \texttt{PRELU6.S})
+and an integer INT8 dot-product instruction (\texttt{PDOT8}), the
 verification method, and the measured results.
 
 \section{Development Environment}
@@ -209,29 +210,70 @@ end
 
 Here \texttt{0x40C00000} is the bit pattern of 6.0.
 
+\section{Design 4: PDOT8 (INT8 Dot Product, Integer Path)}
+
+The target model from Team 1 (TinyMetro-Net) uses 8-bit integer (INT8)
+arithmetic. For this, an integer custom instruction path was added using the
+RISC-V \textbf{custom-1} opcode (\texttt{0x2B}). It is handled by a new
+function \texttt{fn\_custom\_alu} in the integer ALU, and the funct3 field
+selects the operation:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}\toprule
+funct3 & Instruction & Operation\\\midrule
+\texttt{000} & \texttt{ADDP1} & $rd = rs1 + rs2 + 1$ (first test instruction for the flow)\\
+\texttt{001} & \texttt{PDOT8} & $rd = \sum_{i=0}^{7} a_i \, b_i$ (eight signed INT8 lanes)\\\bottomrule
+\end{tabular}
+\caption{Integer custom instructions (custom-1).}
+\end{table}
+
+PDOT8 splits each 64-bit source register into eight signed 8-bit values,
+multiplies them pair by pair and adds the eight products into a 32-bit
+result, which is sign-extended to 64 bits. This performs eight
+multiply-accumulate operations in one instruction.
+
+\begin{lstlisting}[language=Verilog,basicstyle=\ttfamily\small]
+// src/base_alu.bsv (fn_custom_alu)
+Vector#(8, Int#(8)) lv_a = unpack(op1);
+Vector#(8, Int#(8)) lv_b = unpack(op2);
+Int#(32) lv_acc = 0;
+for (Integer i = 0; i < 8; i = i + 1) begin
+  Int#(16) lv_prod = signExtend(lv_a[i]) * signExtend(lv_b[i]);
+  lv_acc = lv_acc + signExtend(lv_prod);
+end
+\end{lstlisting}
+
+In the execute stage (\texttt{stage3.bsv}), ALU instructions whose function
+code is \texttt{FNADDP1} are routed to \texttt{fn\_custom\_alu}; all other ALU
+instructions use the unchanged \texttt{fn\_base\_alu}.
+
 \section{Summary of Hardware Changes}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{lp{9.5cm}}\toprule
 File & Change\\\midrule
-\texttt{decoder.defines} & Encodings of the custom and internal instruction forms\\
-\texttt{decoder.bsv} & custom-2 remap to internal FMADD; FPU code selection\\
+\texttt{decoder.defines} & Encodings of the custom and internal instruction forms; custom-1 function code\\
+\texttt{decoder.bsv} & custom-2 remap to internal FMADD; FPU code selection; custom-1 decoding\\
 \texttt{fpu\_hardfloat.bsv} & Second FMA unit; FDOT2 two-step logic; PFMA lane packing; PRELU6 logic\\
-\texttt{stage3.bsv} & Minor change in the execute stage\\\bottomrule
+\texttt{base\_alu.bsv} & New \texttt{fn\_custom\_alu}: ADDP1 and PDOT8 (INT8 dot product)\\
+\texttt{stage3.bsv} & Routes custom-1 ALU instructions to \texttt{fn\_custom\_alu}\\\bottomrule
 \end{tabular}
 \caption{Files modified relative to Shakti C-Class 5.6.1.}
 \end{table}
 
 The rest of the pipeline (fetch, scoreboard, forwarding, memory and
-writeback) is unchanged: the new instructions travel through the existing
-floating-point path.
+writeback) is unchanged: the floating-point instructions travel through the
+existing floating-point path, and PDOT8 through the existing integer ALU path.
 
 \section{Verification}
 
 \begin{itemize}
-  \item \textbf{Directed test}: FDOT2 on $[2, 1.5]\cdot[4, 3] + 0.5$ returned
-        exactly $13.0$ (\texttt{0x41500000}).
+  \item \textbf{Directed tests}: FDOT2 on $[2, 1.5]\cdot[4, 3] + 0.5$ returned
+        exactly $13.0$ (\texttt{0x41500000}); PDOT8 on eight lanes of
+        $1 \times 2$ returned exactly $16$ (\texttt{0x10}). PDOT8 has passed
+        this functional test but has not yet been benchmarked.
   \item \textbf{Bit-exact benchmarks}: every benchmark runs the same
         computation with standard RISC-V code and with the custom instruction,
         then compares all outputs bit for bit and reports through

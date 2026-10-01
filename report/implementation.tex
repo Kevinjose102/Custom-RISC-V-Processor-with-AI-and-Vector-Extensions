@@ -1,0 +1,287 @@
+% Implementation chapter (30% review)
+% Needs in the preamble: \usepackage{booktabs,listings,amsmath}
+
+\chapter{Implementation}
+
+This chapter describes the work completed for the 30\% review: the
+development environment, profiling of the target workload on the Shakti
+C-Class core, the design and RTL implementation of three custom
+instructions (\texttt{FDOT2.S}, \texttt{PFMA.S} and \texttt{PRELU6.S}), the
+verification method, and the measured results.
+
+\section{Development Environment}
+
+The baseline is the open-source Shakti C-Class core (IIT Madras), official
+release 5.6.1. It is a 6-stage, in-order, 64-bit core implementing
+RV64IMAFDC, written in Bluespec SystemVerilog (BSV). The tool flow is:
+
+\begin{itemize}
+  \item \textbf{Bluespec compiler (bsc)}: compiles the BSV source into Verilog.
+  \item \textbf{Verilator}: builds a cycle-accurate simulator (\texttt{bin/out})
+        from the generated Verilog.
+  \item \textbf{RISC-V GCC 14} (\texttt{riscv64-unknown-elf-gcc}): compiles
+        bare-metal C benchmarks; custom instructions are emitted with the
+        assembler directive \texttt{.insn}.
+  \item \textbf{elf2hex}: converts the program into a memory image loaded by
+        the simulator.
+\end{itemize}
+
+Each simulation produces \texttt{rtl.dump}, a trace with one line per
+retired instruction. Programs report pass or fail by writing to the
+\texttt{tohost} address (\texttt{0x80001000}): \texttt{1} means pass. Timing
+is measured with the hardware counters \texttt{mcycle} (clock cycles) and
+\texttt{minstret} (instructions retired).
+
+\section{Workload Profiling}
+
+\subsection{Profiling on a PC}
+
+The target workload is MobileNetV2 (feature extractor) followed by a GRU
+(temporal model) over 8 video frames. A PyTorch profile per frame gave:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lr}\toprule
+Operation & MACs per frame\\\midrule
+Pointwise $1\times1$ convolution & 267.9 M\\
+Depthwise $3\times3$ convolution & 20.7 M\\
+First $3\times3$ convolution & 10.8 M\\
+GRU (8 steps) & 9.4 M\\\bottomrule
+\end{tabular}
+\caption{Multiply-accumulate (MAC) operations per frame.}
+\end{table}
+
+\subsection{Profiling on the Shakti core}
+
+A PC profile does not show where an embedded core spends its time. Every
+operation of the model was therefore written as a bare-metal C kernel, run
+on the \emph{baseline} Shakti core with the real layer shapes, and timed with
+\texttt{mcycle}. The measured cost per MAC (or per element) was multiplied by
+the number of times each operation runs in one full inference.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrr}\toprule
+Operation & Cycles per MAC & Share of time\\\midrule
+Pointwise convolution & 11.7--13.9 & \textbf{83.8\%}\\
+Depthwise convolution & 16.7 & 8.7\%\\
+First convolution & 17.7 & 4.8\%\\
+ReLU6 & 14.3 / element & 2.2\%\\
+GRU & 12.0 & 0.4\%\\\midrule
+\textbf{Total (one inference)} & & \textbf{31.9 billion cycles}\\\bottomrule
+\end{tabular}
+\caption{Baseline Shakti profile of MobileNetV2 + GRU.}
+\end{table}
+
+Pointwise convolution dominates, and every convolution costs 11--18 cycles
+per MAC. The model is FP32, and Shakti already has a fused multiply-add
+(\texttt{fmadd.s}), so a scalar custom MAC instruction would bring no
+benefit. The instructions were therefore designed to do \emph{more work per
+instruction} by packing two FP32 values into one 64-bit register.
+
+\section{Instruction Encoding}
+
+All new instructions use the RISC-V \textbf{custom-2} opcode
+(\texttt{0x5B}), which is reserved for custom extensions, with the R4
+(three-source-register) layout. The format bits \texttt{[26:25]} select the
+instruction.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llll}\toprule
+fmt & Instruction & Internal FPU code & Assembly\\\midrule
+\texttt{00} & \texttt{FDOT2.S}  & \texttt{0110} & \texttt{.insn r4 0x5B, 0, 0, fd, fs1, fs2, fs3}\\
+\texttt{10} & \texttt{PFMA.S}   & \texttt{0111} & \texttt{.insn r4 0x5B, 0, 2, fd, fs1, fs2, fs3}\\
+\texttt{01} & \texttt{PRELU6.S} & \texttt{0101} & \texttt{.insn r4 0x5B, 0, 1, fd, fs1, fs1, fs1}\\\bottomrule
+\end{tabular}
+\caption{Encoding of the custom instructions.}
+\end{table}
+
+\section{Design 1: FDOT2.S (Packed Dot Product)}
+
+\[
+fs1 = [a_1 \mid a_0],\quad fs2 = [b_1 \mid b_0],\quad
+fd = a_1 b_1 + (a_0 b_0 + fs3)
+\]
+
+FDOT2 performs two multiply-adds in one instruction using the existing FP32
+FMA unit twice in sequence. Because the rounding is identical to two
+\texttt{fmadd.s} instructions, the result is bit-identical to normal code.
+
+\subsection{Decoder remap}
+
+Adding a completely new opcode would require changes across several decoder
+functions. Instead, at the start of \texttt{fn\_decode}, any custom-2 word is
+rewritten into an internal FMADD form with fmt = \texttt{10} (half
+precision, which this core does not implement, so the pattern is otherwise
+unused). The existing FMADD path then handles register reads, the
+scoreboard and writeback unchanged. A separate 4-bit FPU code
+(\texttt{fn}) tells the FPU which custom operation to perform.
+
+\begin{lstlisting}[language=Verilog,basicstyle=\ttfamily\small]
+// src/decoder.bsv
+if (inst_in[6:0] == 'b1011011)                       // custom-2
+  inst = {inst_in[31:27], 2'b10, inst_in[24:7], 7'b1000011};
+...
+if (inst_in[6:0] == 'b1011011)
+  fn = (inst_in[26:25] == 2'b10) ? 4'b0111            // PFMA
+     : ((inst_in[26:25] == 2'b01) ? 4'b0101 : 4'b0110); // PRELU6 / FDOT2
+\end{lstlisting}
+
+\subsection{Problems solved during FDOT2}
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{p{4.3cm}p{4.3cm}p{5cm}}\toprule
+Symptom & Cause & Fix\\\midrule
+BSC rule conflict error & One rule both read the FMA response and issued a new request & Split the second step into its own rule\\
+Illegal-instruction trap & Stale build: old decoder still in the simulator & Clean rebuild, check build time\\
+Result was NaN & FPU NaN-boxing check replaced packed operands & Read the raw 64-bit operands\\
+Still NaN & Operation was selected from bits that hold register data in R4 & Dedicated FPU code \texttt{fn = 0110}\\\bottomrule
+\end{tabular}
+\caption{Issues found and fixed while implementing FDOT2.}
+\end{table}
+
+\subsection{Key finding}
+
+On a pointwise layer (16$\rightarrow$96 channels, 98,304 MACs), FDOT2 reduced
+instructions by $1.87\times$ but cycles by only $1.07\times$. The FPU accepts
+one operation at a time and each FMA takes about 10 cycles, so the two
+sequential FMAs still waited for each other. The kernel is limited by
+\emph{FMA throughput}, not instruction count. To go faster, two FMAs must run
+\emph{in parallel}.
+
+\section{Design 2: PFMA.S (Two-Lane Packed FMA)}
+
+\[
+fs1 = [x_1 \mid x_0],\quad fs2 = w,\quad fs3 = [c_1 \mid c_0],\quad
+fd = [\,x_1 w + c_1 \mid x_0 w + c_0\,]
+\]
+
+PFMA computes two outputs at once. The two inputs are neighbouring pixels of
+one channel, which sit next to each other in memory, so one 64-bit load
+fetches both. Both lanes share the same weight. A \textbf{second FP32 FMA
+unit} (\texttt{spfma2}) was added to the FPU so that both lanes execute in
+parallel; each lane is exactly one \texttt{fmadd.s}, so the results are
+bit-identical.
+
+\begin{lstlisting}[language=Verilog,basicstyle=\ttfamily\small]
+// src/fpu/hardfloat/fpu_hardfloat.bsv
+let spfma2 <- mkspfma_instance;          // second FMA unit (lane 1)
+...
+if (opcode == 4'b0111) begin              // PFMA.S
+  spfma.request (2'b00, r1[31:0],  r2[31:0], r3[31:0],  f3);
+  spfma2.request(2'b00, r1[63:32], r2[31:0], r3[63:32], f3);
+  rg_pfma <= True;                        // pack both results on output
+end
+\end{lstlisting}
+
+The output rule joins the two 32-bit results into one 64-bit value and
+combines their exception flags.
+
+\subsection{Reuse for depthwise and first convolution}
+
+Depthwise and the first convolution have the same structure (neighbouring
+output pixels share the same weights), so PFMA was reused with only C code
+changes. Because a 64-bit load must be 8-byte aligned, the input is first
+copied into a ``pair'' layout. The cost of this copy is included in all
+measurements.
+
+\section{Design 3: PRELU6.S (Packed ReLU6)}
+
+\[
+fd = [\,\mathrm{clamp}_{[0,6]}(x_1) \mid \mathrm{clamp}_{[0,6]}(x_0)\,]
+\]
+
+ReLU6 needs no floating-point arithmetic. For IEEE-754 floats, positive values
+order the same way as their bit patterns read as integers, and negative
+values have the sign bit set. ReLU6 is therefore implemented with integer
+comparisons and completes in \textbf{one cycle}:
+
+\begin{lstlisting}[language=Verilog,basicstyle=\ttfamily\small]
+else if (opcode == 4'b0101) begin   // PRELU6.S
+  Bit#(32) q0 = (l0[31]==1 && l0[30:0]!=0) ? 0
+              : ((l0[31]==0 && l0 > 32'h40C00000) ? 32'h40C00000 : l0);
+  // same for lane 1 (q1)
+  tx_fbox_out.u.enq(XBoxOutput{valid: True, data: {q1, q0}, fflags: 0});
+end
+\end{lstlisting}
+
+Here \texttt{0x40C00000} is the bit pattern of 6.0.
+
+\section{Summary of Hardware Changes}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lp{9.5cm}}\toprule
+File & Change\\\midrule
+\texttt{decoder.defines} & Encodings of the custom and internal instruction forms\\
+\texttt{decoder.bsv} & custom-2 remap to internal FMADD; FPU code selection\\
+\texttt{fpu\_hardfloat.bsv} & Second FMA unit; FDOT2 two-step logic; PFMA lane packing; PRELU6 logic\\
+\texttt{stage3.bsv} & Minor change in the execute stage\\\bottomrule
+\end{tabular}
+\caption{Files modified relative to Shakti C-Class 5.6.1.}
+\end{table}
+
+The rest of the pipeline (fetch, scoreboard, forwarding, memory and
+writeback) is unchanged: the new instructions travel through the existing
+floating-point path.
+
+\section{Verification}
+
+\begin{itemize}
+  \item \textbf{Directed test}: FDOT2 on $[2, 1.5]\cdot[4, 3] + 0.5$ returned
+        exactly $13.0$ (\texttt{0x41500000}).
+  \item \textbf{Bit-exact benchmarks}: every benchmark runs the same
+        computation with standard RISC-V code and with the custom instruction,
+        then compares all outputs bit for bit and reports through
+        \texttt{tohost}. All benchmarks pass.
+  \item \textbf{Regression}: the official \texttt{rv64uf/fmadd.S} test from
+        riscv-tests passes after every hardware change, confirming that the
+        standard FMADD instruction is unaffected.
+\end{itemize}
+
+\section{Results}
+
+All results below were measured on the simulated Shakti core with
+\texttt{mcycle}, using real MobileNetV2 layer shapes, and are bit-exact.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}\toprule
+Kernel & Baseline & Custom & Speedup\\\midrule
+Pointwise, $K$ = 16--144 & 11.1--11.8 cyc/MAC & 6.6--7.0 & \textbf{1.69--1.70$\times$}\\
+Pointwise, $K$ = 320--960 & 13.8--13.9 cyc/MAC & 9.2--9.3 & \textbf{1.49--1.50$\times$}\\
+Depthwise $3\times3$ (incl.\ copy) & 16.99 cyc/MAC & 10.86 & \textbf{1.56$\times$}\\
+First conv $3\times3$, stride 2 & 18.28 cyc/MAC & 9.22 & \textbf{1.98$\times$}\\
+ReLU6 (PRELU6) & 14.00 cyc/elem & 3.52 & \textbf{3.98$\times$}\\\bottomrule
+\end{tabular}
+\caption{Measured per-kernel results ($K$ = number of input channels).}
+\end{table}
+
+Large pointwise layers gain less because their inputs and weights
+(30--90\,KB) do not fit in the 16\,KB data cache; PFMA speeds up the
+arithmetic but not the memory stalls.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrr}\toprule
+Configuration & Cycles & Speedup\\\midrule
+Baseline Shakti & 31.9 B & 1.00$\times$\\
++ PFMA (pointwise, depthwise, first conv) & 19.8 B & 1.61$\times$\\
+\textbf{+ PRELU6} & \textbf{19.3 B} & \textbf{1.66$\times$}\\\bottomrule
+\end{tabular}
+\caption{Whole-model estimate for one inference (8 frames + GRU).}
+\end{table}
+
+The whole-model figure is an estimate: the measured cycles per operation are
+multiplied by the exact operation counts of the model, since simulating the
+full network cycle by cycle would take days.
+
+\section{Current Limitation}
+
+The overall gain is limited by Amdahl's law. Pointwise convolution is still
+about 85\% of the time, and the FPU is not pipelined: it accepts only one
+operation at a time, so each PFMA waits about 10 cycles. Pipelining the FPU,
+so that a new FMA can start every cycle, is the next major step, followed by
+INT8 instructions for the TinyMetro-Net model.
